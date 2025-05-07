@@ -2,8 +2,8 @@ hf_models/
 *.png
 *.txt
 k
-cline_figs/
-cline_results/
+*ne_figs/
+*ne_results/
 *.csv
 *.pdf
 *.tex
