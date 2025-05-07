@@ -64,11 +64,8 @@ This script will process the log files from your experiments (by default in `./e
 
 Example Replay (Pursuit Task):
 
-[![Pursuit Replay](assets/输出.gif)](assets/输出.gif) 👈🎬
+[![Pursuit Replay](assets/demo.gif)](assets/demo.gif) 👈🎬
 
-<div align="center">
-  <img src="assets/输出.gif" alt="Replay Video" width="70%">
-</div>
 
 ### 4. Interactive Replay 🎮
 
