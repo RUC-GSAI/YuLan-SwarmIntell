@@ -16,8 +16,8 @@ class ModelConfig:
 
 class Framework:
     """
-    框架类，用于整合代理、环境和日志记录器
-    不作为基类使用，而是直接实例化来运行模拟
+    Framework class, used to integrate agents, environments, and loggers
+    Not intended to be used as a base class, but rather to be directly instantiated to run the simulation
     """
 
     def __init__(self):
@@ -28,17 +28,17 @@ class Framework:
     def start(self, agent_cls, env_cls, logger_cls, env_name, num_agents, model,
               agent_args=None, logger_args=None, env_args=None):
         """
-        启动模拟框架
+        Start the simulation framework
         
-        参数:
-            agent_cls: 代理类
-            env_cls: 环境类
-            logger_cls: 日志记录器类
-            env_name: 环境名称
-            num_agents: 代理数量
-            agent_args: 代理初始化参数
-            logger_args: 日志记录器初始化参数
-            env_args: 环境初始化参数
+        Parameters:
+            agent_cls: Agent class
+            env_cls: Environment class
+            logger_cls: Logger class
+            env_name: Environment name
+            num_agents: Number of agents
+            agent_args: Agent initialization parameters
+            logger_args: Logger initialization parameters
+            env_args: Environment initialization parameters
         """
         if agent_args is None:
             agent_args = {}
@@ -51,20 +51,20 @@ class Framework:
 
         if isinstance(model, ModelConfig):
             model = [model for _ in range(num_agents)]
-        # 创建代理
+        # create agent
         self.agents = {}
         for i in range(num_agents):
             agent_name = f'Agent_{i}'
             self.agents[agent_name] = agent_cls(agent_name, Chat(
                 model[i].api_base, model[i].api_key, model[i].model), **agent_args)
         
-        # 创建日志记录器
+        # create logger
         self.logger = logger_cls(env_name, **logger_args)
         
-        # 创建环境
+        # create environment
         self.env = env_cls(env_name, self.agents, self.logger, **env_args)
         
-        # 启动模拟
+        # start simulation
         self.env.start()
         
         return self.env

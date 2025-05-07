@@ -16,11 +16,11 @@ stdout = sys.stdout
 
 @contextmanager
 def silence():
-    # 保存当前的 stdout
+    # Save the current stdout
     original_stdout = sys.stdout
-    sys.stdout = open(os.devnull, 'w')  # 重定向 stdout 到 devnull
-    yield  # 允许代码运行
-    sys.stdout = original_stdout  # 恢复 stdout
+    sys.stdout = open(os.devnull, 'w')  # Redirect stdout to devnull
+    yield  # Allow the code to run
+    sys.stdout = original_stdout  # Restore stdout
 
 
 def output(s):
@@ -50,11 +50,11 @@ class SwarmFramework:
             raise RuntimeError(f'Cannot run level because level is already {self.status}.')
         env_name = self.name
         
-        # 准备代理参数
+        # Prepare agent parameters
         sys_prompt = "You are a agent. You need to cooperate with other agents and finish a given task."
         agent_args = {"sys_prompt": sys_prompt}
         
-        # 准备日志记录器参数
+        # Prepare logger parameters
         meta = {
             'model': model.model if isinstance(model, ModelConfig) else [m.model for m in model],
             'level': level,
@@ -67,12 +67,12 @@ class SwarmFramework:
         }
         logger_args = {"log_dir": log_dir, "meta": meta}
         
-        # 准备环境参数
+        # Prepare environment parameters
         env_args = {"level": level, "seed": seed, "max_round": max_round,
                     'width': width, 'height': height, 'view_size': view_size}
 
         self.framework = Framework()
-        # 使用框架启动游戏
+        # Use the framework to start the game
         self.framework.start(
             agent_cls=SwarmAgent,
             env_cls=SwarmEnvironment,

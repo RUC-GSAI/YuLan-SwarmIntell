@@ -4,22 +4,22 @@ import numpy as np
 
 class Node:
     def __init__(self, data):
-        self.data = data  # Mesh或set[Mesh]，这对ILP构造无实质影响
+        self.data = data  # Mesh or set[Mesh], this has no substantial impact on ILP construction
         self.detected = False
-        self.neighbors = set()  # 存放子节点: Node
-        self.force = 0  # 整数，节点自身施加的力
+        self.neighbors = set()  # Storing child nodes: Node
+        self.force = 0  # Integer, the force applied by the node itself
         self.forces = None if isinstance(data, Mesh) else {}
-        self.mass = data.mass if isinstance(data, Mesh) else 0  # 已经取过平方根并向下取整
-        self.static = data.static if isinstance(data, Mesh) else False  # 若是“静态”节点，则可以把 mass 设为一个很大的值
+        self.mass = data.mass if isinstance(data, Mesh) else 0  # Already taken the square root and rounded down
+        self.static = data.static if isinstance(data, Mesh) else False  # If it is a "static" node, you can set the mass to a very large value
 
     @classmethod
     def pass_forward(cls, heads):
         """
-        heads: 入度为0的节点列表
-        返回: 一个 set, 表示一次ILP求解中得到的可被推动的所有节点
+        heads: List of nodes with in-degree 0
+        Returns: A set, representing all the nodes that can be pushed in one ILP solution
         """
 
-        # 1) 收集所有节点: 从 heads 出发DFS/BFS遍历即可
+        # 1) Collect all nodes: Start from 'heads' and perform DFS/BFS traversal
         visited = set()
         def dfs(u):
             if u in visited:
@@ -35,24 +35,24 @@ class Node:
                 node.mass -= node.force
                 node.force = 0
 
-        # 2) 收集边 (v -> w)
+        # 2) Collect edges (v -> w)
         edges = []
         for v in all_nodes:
             for w in v.neighbors:
                 edges.append((v, w))
 
-        # 3) 建立 ILP 问题: 最大化 sum x[v]
+        # 3) Build ILP problem: Maximize sum x[v]
         prob = pulp.LpProblem("PassForwardILP", pulp.LpMaximize)
 
-        # 设一个大常数 M, 用于“剩余力”的松弛
-        # 视实际问题规模而定
+        # Set a large constant M, used for slack in "residual force"
+        # Depends on the actual problem scale
         M = 10000
 
-        # 4) 定义变量
-        #    x[v]: 0/1, 表示节点v是否被推动
-        #    netForce[v]: >=0, 节点v的合力
-        #    leftover[v]: >=0, 节点v剩余的可分配力
-        #    f_{v->w}: >=0, v分配给w的力
+        # 4) Define variables
+        #    x[v]: 0/1, indicates if node v is pushed
+        #    netForce[v]: >=0, net force on node v
+        #    leftover[v]: >=0, leftover distributable force of node v
+        #    f_{v->w}: >=0, force allocated by v to w
         x = {}
         netForce = {}
         leftover = {}
@@ -60,7 +60,7 @@ class Node:
 
         for v in all_nodes:
             if v.static:
-                # 若 v 是静态节点, 强制 x[v] = 0
+                # If v is a static node, force x[v] = 0
                 x[v] = pulp.LpVariable(f"x_static_{id(v)}", cat=pulp.LpBinary)
             else:
                 x[v] = pulp.LpVariable(f"x_{id(v)}", cat=pulp.LpBinary)
@@ -71,23 +71,23 @@ class Node:
         for (v, w) in edges:
             f[(v,w)] = pulp.LpVariable(f"f_{id(v)}_{id(w)}", lowBound=0)
 
-        # 5) 目标函数: 最大化 sum x[v]
+        # 5) Objective function: Maximize sum x[v]
         prob += pulp.lpSum(x[v] for v in all_nodes)
 
-        # 6) 添加约束
+        # 6) Add constraints
 
-        # 6.1 静态节点强制 x[v] = 0
+        # 6.1 Static nodes force x[v] = 0
         for v in all_nodes:
             if v.static:
                 prob.addConstraint( x[v] == 0, f"static_{id(v)}" )
 
-        # 6.2 向下封闭: 若 v被选中 => w也被选中 (v->w)
+        # 6.2 Downward closure: If v is selected => w is also selected (v->w)
         #     x[w] >= x[v]
         for (v, w) in edges:
             prob.addConstraint( x[w] >= x[v], f"desc_closure_{id(v)}_{id(w)}" )
 
         # 6.3 netForce[v] = v.force + sum_{u->v} f[u->v]
-        #    先建 in_neighbors[v]
+        #    First build in_neighbors[v]
         in_neighbors = { nd: [] for nd in all_nodes }
         for (u, v) in edges:
             in_neighbors[v].append(u)
@@ -98,7 +98,7 @@ class Node:
                 f"netForceDef_{id(v)}"
             )
 
-        # 6.4 若 x[v]=1 => netForce[v] >= mass[v]
+        # 6.4 If x[v]=1 => netForce[v] >= mass[v]
         for v in all_nodes:
             prob.addConstraint(
                 netForce[v] >= v.mass * x[v],
@@ -106,10 +106,10 @@ class Node:
             )
 
         # 6.5 leftover[v] = max(netForce[v]-mass[v], 0)
-        #    用不等式 + 大M技巧:
+        #    Use inequalities + big M trick:
         #    leftover[v] >= netForce[v] - mass[v]
         #    leftover[v] <= netForce[v] - mass[v] + M*(1 - x[v])
-        #    leftover[v] >= 0   (已在变量定义)
+        #    leftover[v] >= 0   (already in variable definition)
         for v in all_nodes:
             prob.addConstraint(
                 leftover[v] >= netForce[v] - v.mass,
@@ -120,7 +120,7 @@ class Node:
                 f"leftover_ub_{id(v)}"
             )
 
-        # 6.6 分配给子节点的力 <= leftover[v]
+        # 6.6 Force allocated to child nodes <= leftover[v]
         #    sum_{w in neighbors[v]} f[v->w] <= leftover[v]
         out_map = {}
         for v in all_nodes:
@@ -138,7 +138,7 @@ class Node:
                 f"can_outflow_{id(v)}"
             )
 
-        # 6.7 边上的力必须 0, 当子节点不被选
+        # 6.7 Force on edge must be 0 if the child node is not selected
         #     f[v->w] <= M * x[w]
         for (v, w) in edges:
             prob.addConstraint(
@@ -146,14 +146,14 @@ class Node:
                 f"edge_flow_{id(v)}_{id(w)}"
             )
 
-        # 7) 求解
+        # 7) Solve
         solver = pulp.PULP_CBC_CMD(msg=0)
         result = prob.solve(solver)
 
         # for var in prob.variables():
         #     print(f'{var.getName()} = {pulp.value(var)}')
 
-        # 8) 若可行(或最优)则收集 x[v]=1 的节点
+        # 8) If feasible (or optimal), collect nodes with x[v]=1
         pushable_set = set()
         if pulp.value(prob.status) == 1:  # LpStatusOptimal
             for v in all_nodes:
@@ -254,14 +254,14 @@ class Mesh:
         mesh_map, bias = cls.extend_map(mesh_map)
         for i in range(mesh_map.shape[0]):
             for j in range(mesh_map.shape[1]):
-                if mesh_map[i, j] is not None:
-                    mesh_map[i, j].node = Node(mesh_map[i, j])
+                if mesh_map[i][j] is not None:
+                    mesh_map[i][j].node = Node(mesh_map[i][j])
         for i in range(mesh_map.shape[0]):
             for j in range(mesh_map.shape[1]):
-                if mesh_map[i, j] is not None:
-                    if mesh_map[i, j].node.detected:
+                if mesh_map[i][j] is not None:
+                    if mesh_map[i][j].node.detected:
                         continue
-                    mesh_map[i, j].detect(mesh_map, di, dj, bias)
+                    mesh_map[i][j].detect(mesh_map, di, dj, bias)
 
     def move(self, grid, mesh_map, di, dj):
         block_item = set()
@@ -279,16 +279,16 @@ class Mesh:
     @classmethod
     def build_dag(cls, mesh_map):
         """
-        将 mesh_map 上所有 mesh.node 视为图中的节点，基于 node.neighbors 构造有向图；
-        若图中出现环，则对应强连通分量合并为一个新的超级节点，形成一个 DAG。
+        Treat all mesh.node on mesh_map as nodes in a graph, build a directed graph based on node.neighbors;
+        If a cycle appears in the graph, the corresponding strongly connected component is merged into a new supernode, forming a DAG.
 
-        返回值:
-            返回一个列表，包含所有入度为 0 的“超级节点”(每个超级节点都是一个 Node 对象)，
-            这些超级节点中 node.data 可能是一个 set[Mesh]，代表多个 Mesh 合并在一起。
+        Returns:
+            Returns a list containing all "supernodes" with an in-degree of 0 (each supernode is a Node object),
+            In these supernodes, node.data might be a set[Mesh], representing multiple Meshes merged together.
         """
 
         # ---------------------------------------------------------------------
-        # 1. 收集所有节点
+        # 1. Collect all nodes
         # ---------------------------------------------------------------------
         all_nodes = []
         for i in range(mesh_map.shape[0]):
@@ -296,41 +296,41 @@ class Mesh:
                 if mesh_map[i][j] is not None:
                     all_nodes.append(mesh_map[i][j].node)
 
-        # 如果没有节点，直接返回
+        # If there are no nodes, return directly
         if not all_nodes:
             return []
 
         # ---------------------------------------------------------------------
-        # 2. 用 Tarjan 算法(或其他算法)找出强连通分量
+        # 2. Use Tarjan's algorithm (or other algorithms) to find strongly connected components
         # ---------------------------------------------------------------------
-        index_counter = [0]  # 记录 DFS 访问顺序
+        index_counter = [0]  # Record DFS visit order
         stack = []
         on_stack = set()
-        scc_id = {}  # node -> scc 索引
-        indexes = {}  # node -> DFS 访问顺序
-        lowlink = {}  # node -> 该节点能追溯到的最小 index
-        current_scc_count = [0]  # 已找到的强连通分量数量
+        scc_id = {}  # node -> scc index
+        indexes = {}  # node -> DFS visit order
+        lowlink = {}  # node -> The smallest index this node can trace back to
+        current_scc_count = [0]  # Number of strongly connected components found
 
         def strongconnect(node):
-            # 设置该节点的索引和 lowlink
+            # Set the index and lowlink of this node
             indexes[node] = index_counter[0]
             lowlink[node] = index_counter[0]
             index_counter[0] += 1
             stack.append(node)
             on_stack.add(node)
 
-            # 遍历所有可能的方向
+            # Iterate over all possible neighbors
             for nxt in node.neighbors:
-                if nxt not in indexes:  # 未访问
+                if nxt not in indexes:  # Not visited
                     strongconnect(nxt)
                     lowlink[node] = min(lowlink[node], lowlink[nxt])
                 elif nxt in on_stack:
-                    # nxt 在栈中，说明在当前强连通分量搜索路径上
+                    # nxt is in the stack, meaning it's on the current SCC search path
                     lowlink[node] = min(lowlink[node], indexes[nxt])
 
-            # 如果当前节点是强连通分量的根
+            # If the current node is the root of a strongly connected component
             if lowlink[node] == indexes[node]:
-                # 从栈中不断弹出，直到把该强连通分量都取完
+                # Continuously pop from the stack until the entire strongly connected component is retrieved
                 comp_id = current_scc_count[0]
                 current_scc_count[0] += 1
 
@@ -343,25 +343,25 @@ class Mesh:
                     if w == node:
                         break
 
-        # 对所有节点进行 strongconnect
+        # Perform strongconnect on all nodes
         for n in all_nodes:
             if n not in indexes:
                 strongconnect(n)
 
-        # 如果只有一个强连通分量，说明所有节点都在同一个环或互相强连通
-        # 这里也无所谓，下面的逻辑同样能处理
+        # If there is only one strongly connected component, it means all nodes are in the same cycle or are mutually strongly connected
+        # This doesn't matter here, the following logic can handle it as well
 
         # ---------------------------------------------------------------------
-        # 3. 每个强连通分量合并成一个新的超级节点
+        # 3. Merge each strongly connected component into a new supernode
         # ---------------------------------------------------------------------
-        comp_count = current_scc_count[0]  # 强连通分量总数
-        # 创建新的超级节点数组
+        comp_count = current_scc_count[0]  # Total number of strongly connected components
+        # Create a new array of supernodes
         super_nodes = [Node(data=set()) for _ in range(comp_count)]
 
-        # 将原节点的 Mesh/mass 等信息合并到各自所属的超级节点
+        # Merge Mesh/mass and other information of original nodes into their respective supernodes
         for node in all_nodes:
             cid = scc_id[node]
-            # 合并 data
+            # Merge data
             if isinstance(node.data, set):
                 # print(f'MERGE: {node.data & super_nodes[cid].data}')
                 super_nodes[cid].data.update(node.data)
@@ -377,8 +377,8 @@ class Mesh:
             super_nodes[cid].force = sum(super_nodes[cid].forces.values())
 
         # ---------------------------------------------------------------------
-        # 4. 建立超级节点之间的有向边
-        #   如果原图中两个节点属于不同的强连通分量，则超级节点之间存在边
+        # 4. Build directed edges between supernodes
+        #   If two nodes in the original graph belong to different strongly connected components, an edge exists between their supernodes
         # ---------------------------------------------------------------------
         for cid in range(comp_count):
             super_nodes[cid].neighbors = set()
@@ -388,21 +388,21 @@ class Mesh:
             for nxt in node.neighbors:
                 cid_v = scc_id[nxt]
                 if cid_u != cid_v:
-                    # 在新的超级图上添加有向边
+                    # Add a directed edge on the new supergraph
                     super_nodes[cid_u].neighbors.add(super_nodes[cid_v])
 
         # ---------------------------------------------------------------------
-        # 5. 找出所有入度为 0 的超级节点并返回
+        # 5. Find all supernodes with an in-degree of 0 and return them
         # ---------------------------------------------------------------------
         in_degree = [0] * comp_count
         for cid in range(comp_count):
-            # 遍历所有方向
+            # Iterate over all neighbors
             for nxt in super_nodes[cid].neighbors:
-                # nxt 是一个超级节点
+                # nxt is a supernode
                 nxt_id = super_nodes.index(nxt)
                 in_degree[nxt_id] += 1
 
-        # 返回所有 in_degree = 0 的超级节点
+        # Return all supernodes with in_degree = 0
         result = []
         for cid in range(comp_count):
             if in_degree[cid] == 0:

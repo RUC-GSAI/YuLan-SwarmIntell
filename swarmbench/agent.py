@@ -31,7 +31,7 @@ def view2str(view_full, offset):
 class SwarmAgent(Agent):
     def __init__(self, name, brain, sys_prompt, memory=5):
         super().__init__(name, brain, sys_prompt)
-        self.history = []  # 存储代理的历史记录
+        self.history = []
         self.mesh = None
         self.views = []
         self.memory = memory
@@ -43,19 +43,19 @@ class SwarmAgent(Agent):
         if self.escaped:
             return {}
         return await super().decision(obs)
-
+    
     def gen_prompt(self, obs, msgs):
         """
-        生成发送给LLM的提示
+        Generate the prompt to be sent to the LLM
         
-        参数:
-            obs: 环境观察
-            msgs: 来自其他代理的消息
+        Parameters:
+            obs: Environment observation
+            msgs: Messages from other agents
         """
         if obs is None:
-            return "无法获取观察数据，请等待下一轮。"
+            return "Unable to get observation data, please wait for the next round."
         
-        # 从观察中提取信息
+        # Extract information from the observation
         level = obs.get('level', None)
         round_num = obs.get('round', 0)
         view = obs.get('view', None)
@@ -65,12 +65,12 @@ class SwarmAgent(Agent):
         x, y = pos['x'], pos['y']
         self.views.append(view2str(view, (y, x)))
 
-        # 构建视野字符串
+        # Construct the view string
         view_str = '\n'.join(f'{step_name}:\n{s}' for step_name, s in
-                             zip(['Current Step'] + [f'{i} Steps Before' for i in range(1, self.memory)], self.views[-self.memory:][::-1]))
+                            zip(['Current Step'] + [f'{i} Steps Before' for i in range(1, self.memory)], self.views[-self.memory:][::-1]))
         # print(view_str)
 
-        # 构建历史记录字符串
+        # Construct the history string
         history_str = ""
         for entry in self.history[-self.memory:]:
             history_str += f"Round {entry['round']}: Action: {entry['action']}"
@@ -78,7 +78,7 @@ class SwarmAgent(Agent):
                 history_str += f", Message: \"{entry['message']}\""
             history_str += "\n"
 
-        # 构建消息字符串
+        # Construct the message string
         messages_str = ""
         for agent_name, msg in msgs.items():
             messages_str += f"Message: \"{msg}\"\n"
@@ -88,7 +88,7 @@ class SwarmAgent(Agent):
         level_obs = level.level_obs(self)
         level_obs_str = '\n'.join(f'{k}: {v}' for k, v in level_obs.items())
 
-        # 构建完整提示
+        # Construct the complete prompt
         self.prompt = f"""You are Agent {name}, operating in a multi-agent environment. Your goal is to complete the task through exploration and collaboration.
 
 Task description:
@@ -160,18 +160,18 @@ End your response clearly with your chosen action: "ACTION: [YOUR_ACTION]" and/o
     
     def to_action(self, response):
         """
-        将LLM响应转换为动作
+        Convert the LLM response into an action
         
-        参数:
-            response: LLM的响应文本
+        Parameters:
+            response: The response text from the LLM
             
-        返回:
-            包含动作信息的字典
+        Returns:
+            A dictionary containing action information
         """
         action = None
         message = None
         
-        # 尝试匹配动作
+        # Try to match the action
         action_patterns = ["ACTION:", "Action:", "action:"]
         for pattern in action_patterns:
             if pattern in response:
@@ -181,7 +181,7 @@ End your response clearly with your chosen action: "ACTION: [YOUR_ACTION]" and/o
                         action = valid_action
                         break
         
-        # 尝试匹配说话内容
+        # Try to match the message
         msg_patterns = ["MSG:", "Msg:", "msg:"]
         for pattern in msg_patterns:
             if pattern in response:
@@ -193,17 +193,17 @@ End your response clearly with your chosen action: "ACTION: [YOUR_ACTION]" and/o
                 if len(message) > 120:
                     message = message[:120] + "..."
         
-        # 更新历史记录
+        # Update the history
         self.history.append({
             'round': len(self.history) + 1,
             'action': action if action else 'NONE',
             'message': message if message else ''
         })
         
-        # 构建动作字典
+        # Build the action dictionary
         result = {
-            'prompt': self.prompt,  # 记录原始提示
-            'response': response,  # 记录原始响应
+            'prompt': self.prompt,  # Record the original prompt
+            'response': response,  # Record the original response
         }
         
         if action:
@@ -212,6 +212,6 @@ End your response clearly with your chosen action: "ACTION: [YOUR_ACTION]" and/o
         if message:
             result['speak'] = message
         print(f'{self.name} {action if action else "NONE":<8}{message}')
-        # 记录API调用时间（实际值会在环境中设置）
+        # Record the API call time (the actual value will be set in the environment)
         result['api_call_time'] = 0
         return result

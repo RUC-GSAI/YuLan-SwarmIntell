@@ -19,7 +19,7 @@ class SwarmLogger(Logger):
             if not os.path.exists(log_dir):
                 os.makedirs(log_dir)
 
-        # 初始化日志文件
+        # init logger
         timestamp = f'{int(time.time())}-{current_thread().getName()}'
         self.game_log_file = os.path.join(log_dir, f"game_log_{timestamp}.json")
         self.agent_log_file = os.path.join(log_dir, f"agent_log_{timestamp}.json")
@@ -35,16 +35,16 @@ class SwarmLogger(Logger):
             f.seek(0)
             json.dump(meta_log, f)
 
-        # 初始化日志数据
+        # init log data
         self.game_logs = []
         self.agent_logs = []
 
     def log_game_state(self, env, round_num, timestamp):
-        """记录游戏状态"""
-        # 将numpy数组转换为列表
+        """Log game state"""
+        # Convert numpy array to list
         grid_list = env.grid.tolist()
         
-        # 获取代理信息
+        # Get agent information
         agents_info = []
         for name, mesh in env.agent_meshes.items():
             agents_info.append({
@@ -53,7 +53,7 @@ class SwarmLogger(Logger):
                 "y": mesh.pos[0]
             })
 
-        # 获取消息
+        # Get messages
         messages = [m for m in env.messages if m["round"] == round_num-1]
         
         game_state = {
@@ -70,8 +70,8 @@ class SwarmLogger(Logger):
     
     def log_agent_action(self, env, agent_id, prompt, response, action, message,
                          api_call_time, action_success, view, total_llm_tokens):
-        """记录代理动作"""
-        # 将视野numpy数组转换为列表
+        """Record agent actions"""
+        # Convert the vision numpy array to a list
         view_list = view.tolist() if view is not None else None
         
         agent_log = {
@@ -92,36 +92,36 @@ class SwarmLogger(Logger):
         self.save_agent_logs()
     
     def save_game_logs(self):
-        """保存游戏日志"""
+        """Save game logs"""
         with safe_open(self.game_log_file, 'w') as f:
             json.dump(self.game_logs, f, indent=2)
-    
+
     def save_agent_logs(self):
-        """保存代理日志"""
+        """Save agent logs"""
         with safe_open(self.agent_log_file, 'w') as f:
             json.dump(self.agent_logs, f, indent=2)
-    
+
     def info(self, msg):
         """
-        输出信息日志
-        重写Logger的info方法
+        Output informational logs
+        Overriding the info method of Logger
         """
         super().info(msg)
         print(msg)
-    
+
     def debug(self, msg):
         """
-        输出调试日志
-        重写Logger的debug方法
+        Output debug logs
+        Overriding the debug method of Logger
         """
         super().debug(msg)
         if os.environ.get('DEBUG'):
             print(f"[DEBUG] {msg}")
-    
+
     def error(self, msg):
         """
-        输出错误日志
-        重写Logger的error方法
+        Output error logs
+        Overriding the error method of Logger
         """
         super().error(msg)
         print(f"[ERROR] {msg}")

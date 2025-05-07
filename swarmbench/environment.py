@@ -26,8 +26,8 @@ class SwarmEnvironment(Environment):
         self.grid = np.full((self.height, self.width), '.', dtype=str)
         self.round = 0
         self.done = False
-        self.messages = []  # 存储agent之间的消息
-        # self.agents_pos = {}  # 存储每个agent的位置信息
+        self.messages = []
+        # self.agents_pos = {}
         self.levels = {
             'Transport': Transport(seed),
             'Flocking': Flocking(seed),
@@ -45,9 +45,9 @@ class SwarmEnvironment(Environment):
         self.__grid_dtype = None
         self.seed = seed
         self.view_size = view_size
-        # 初始化colorama
+        # init colorama
         init()
-        # 初始化关卡
+        # init task
         self.reset()
 
     @property
@@ -57,7 +57,7 @@ class SwarmEnvironment(Environment):
         return self.__grid_dtype
 
     def reset(self):
-        # 重置网格
+        # reset grids
         self.__grid_dtype = None
         self.grid = np.full((self.height, self.width), '.', dtype=str)
         self.mesh_map = np.full_like(self.grid, None, dtype=object)
@@ -67,10 +67,10 @@ class SwarmEnvironment(Environment):
         self.agent_meshes = {}
         self.levels[self.level].reset(self)
 
-        # 记录初始状态
+        # log init state
         self.logger.log_game_state(self, 0, time.time())
         print(self.render())
-        return self.obs(None)  # 返回初始状态
+        return self.obs(None)  # return initial state
 
     def is_done(self):
         if not self.done:
@@ -83,7 +83,7 @@ class SwarmEnvironment(Environment):
 
     def obs(self, agent):
         if agent is None:
-            # 返回全局状态
+            # return global state
             return {
                 'level': self.levels[self.level],
                 'round': self.round,
@@ -94,7 +94,7 @@ class SwarmEnvironment(Environment):
         name = agent.name
         view = self.get_view(name)
         x, y = self.agent_meshes[name].pos[1], self.agent_meshes[name].pos[0]
-        # 获取可见的消息
+        # get all visible messages
         visible_messages = self.get_agent_visible_messages(name)
 
         return {
@@ -108,13 +108,13 @@ class SwarmEnvironment(Environment):
         }
 
     def notify(self, agent):
-        # 获取其他代理的可见消息
+        # Get the visible messages of other agents
         name = agent.name
         if name not in self.agent_meshes:
             return
         
         for msg in self.messages:
-            if msg['round'] == self.round - 1:  # 上一轮消息
+            if msg['round'] == self.round - 1:  # Messages from the previous round
                 speaker_name = msg['agent_name']
                 if self.is_visible(name, speaker_name):
                     agent.notify(speaker_name, msg['message'])
@@ -126,7 +126,7 @@ class SwarmEnvironment(Environment):
         observer_x, observer_y = self.agent_meshes[observer_name].pos[1], self.agent_meshes[observer_name].pos[0]
         target_x, target_y = self.agent_meshes[target_name].pos[1], self.agent_meshes[target_name].pos[0]
         
-        view_size = self.view_size  # 视野范围
+        view_size = self.view_size
         half_view = view_size // 2
         
         return abs(observer_x - target_x) <= half_view and abs(observer_y - target_y) <= half_view
@@ -137,7 +137,7 @@ class SwarmEnvironment(Environment):
         
         visible_messages = []
         for msg in self.messages:
-            if msg['round'] == self.round - 1:  # 过去1帧
+            if msg['round'] == self.round - 1:  # the past frame
                 speaker_name = msg['agent_name']
                 if self.is_visible(agent_name, speaker_name):
                     visible_messages.append(msg)
@@ -152,11 +152,11 @@ class SwarmEnvironment(Environment):
         
         result = {'success': False}
         
-        # 处理移动
+        # process move
         if 'move' in action and action['move'] in dirc_map:
             result['success'] = self.move_agent(name, action['move'])
             
-        # 处理消息
+        # process msg
         if 'speak' in action and action['speak']:
             self.messages.append({
                 'round': self.round,
@@ -165,7 +165,7 @@ class SwarmEnvironment(Environment):
             })
             result['message_sent'] = True
             
-        # 记录代理动作
+        # log agent's action
         self.logger.log_agent_action(
             self, name, 
             action.get('prompt', ''), 
@@ -217,9 +217,9 @@ class SwarmEnvironment(Environment):
                 mesh.remove(self.grid, self.mesh_map)
                 self.agents[name].escaped = True
         self.round += 1
-        # 记录当前回合状态
+        # log state
         self.logger.log_game_state(self, self.round, time.time())
-        # 渲染全局状态
+        # render global state
         print(self.render())
         self.actions = {}
 
@@ -243,21 +243,21 @@ class SwarmEnvironment(Environment):
 
         for i in range(view_size):
             for j in range(view_size):
-                # 计算对应的环境坐标
+                # Calculate the corresponding environment coordinates
                 grid_x = x + (j - half_view)
                 grid_y = y + (i - half_view)
 
-                # 检查坐标是否在网格范围内
+                # Check if the coordinates are within the grid range
                 if 0 <= grid_x < self.width and 0 <= grid_y < self.height:
                     view[i, j] = grid[grid_y, grid_x]
                 else:
-                    view[i, j] = '*'  # 视野外的区域为*
+                    view[i, j] = '*'  # Areas outside the view are represented by *
 
         return view
 
     def render(self, name=None):
         if name:
-            # 渲染特定agent的视野
+            # render agent's view
             view = self.get_view(name)
             if view is None:
                 return "Agent not found"
@@ -274,7 +274,7 @@ class SwarmEnvironment(Environment):
             return view_str
 
         else:
-            # 渲染全局视图
+            # render global view
             grid_str = f"Global View (Round {self.round}):\n"
             grid_str += "   " + " ".join(str(i % 10) for i in range(self.width)) + "\n"
             
@@ -282,8 +282,8 @@ class SwarmEnvironment(Environment):
                 grid_str += f"{i:2d} "
                 for j in range(self.width):
                     cell = self.grid[i, j]
-                    if cell[0] == 'A':  # 判断是否为代理
-                        grid_str += Back.GREEN + cell[0] + Style.RESET_ALL + " "  # 只显示首字符以节省空间
+                    if cell[0] == 'A':  # is Agent?
+                        grid_str += Back.GREEN + cell[0] + Style.RESET_ALL + " "  # only display the first char to save space
                     elif cell[0] == 'W':
                         grid_str += Back.RED + cell + Style.RESET_ALL + " "
                     elif cell[0] == 'B':
@@ -295,8 +295,6 @@ class SwarmEnvironment(Environment):
                 grid_str += "\n"
             
             return grid_str
-
-    # 构造函数在类的顶部已经定义过了
 
 
 if __name__ == '__main__':

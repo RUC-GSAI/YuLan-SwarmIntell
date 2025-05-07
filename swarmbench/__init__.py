@@ -4,5 +4,5 @@ from swarmbench.environment import SwarmEnvironment
 from swarmbench.logger import SwarmLogger
 from swarmbench import level
 
-# 方便直接从包导入
+# Convenient to import directly from the package
 __all__ = ['SwarmFramework', 'SwarmAgent', 'SwarmEnvironment', 'SwarmLogger', 'level']

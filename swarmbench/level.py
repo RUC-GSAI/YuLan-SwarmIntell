@@ -28,7 +28,7 @@ class Level:
 
 
 def spread(env, x0, x1, y0, y1, rng, symbol='A'):
-    # 放置agent
+    # place agent
     used_positions = set()
     for name, _ in env.agents.items():
         while True:
@@ -54,8 +54,8 @@ class Transport(Level):
         self.score = 0
 
     def reset(self, env):
-        # 第一关：右边的出口被障碍物堵住，需要至少5个bot推动
-        # 设置墙壁
+        # The first level: the exit on the right is blocked by obstacles, and at least 5 bots need to push it
+        # Set the walls
         self.escaped = set()
         box_width = 4
         box_height = 4
@@ -93,7 +93,7 @@ class Transport(Level):
         self.score = 0
 
     def is_done(self, env):
-        # 检查所有agent是否都通过出口
+        # Check if all agents have exited through the exit
         all_out = True
         for name, mesh in env.agent_meshes.items():
             y, x = mesh.pos
@@ -132,30 +132,30 @@ class Flocking(Level):
         self.cur_dis = 1e10
 
     def emd(self, grid):
-        # 提取目标和源点坐标
+        # Extract the coordinates of the target and source points
         tgt = np.argwhere(self.target_shape == 'A')  # shape (n,2)
         src = np.argwhere(grid == 'A')  # shape (m,2)
         n, m = len(tgt), len(src)
         if n == 0:
             return 0, 0, 0
 
-        # 预计算差值矩阵 D_x, D_y
+        # Pre-compute the difference matrices D_x, D_y
         # D_x[i,j] = src[i,0] - tgt[j,0], D_y[i,j] = src[i,1] - tgt[j,1]
-        D_x = src[:, 0:1] - tgt[:, 0]  # shape (m,n) via广播
+        D_x = src[:, 0:1] - tgt[:, 0]  # shape (m,n) via broadcasting
         D_y = src[:, 1:2] - tgt[:, 1]  # shape (m,n)
 
-        # 生成所有候选平移向量 (dx,dy)
-        # 注意：用 D_x, D_y 这两个矩阵快速提取所有差值
+        # Generate all candidate translation vectors (dx,dy)
+        # Note: Use the D_x, D_y matrices to quickly extract all differences
         cand_set = set(zip(D_x.ravel(), D_y.ravel()))
 
         best_cost = np.inf
         best_dx = best_dy = 0
 
-        # 枚举候选
+        # Enumerate the candidates
         for dx, dy in cand_set:
-            # 对每个候选平移，成本矩阵为 |D_x-dx|+|D_y-dy|
+            # For each candidate translation, the cost matrix is |D_x-dx|+|D_y-dy|
             cost = np.abs(D_x - dx) + np.abs(D_y - dy)
-            # 最小指派
+            # Optimal assignment
             row_ind, col_ind = linear_sum_assignment(cost)
             total = cost[row_ind, col_ind].sum()
             if total < best_cost:

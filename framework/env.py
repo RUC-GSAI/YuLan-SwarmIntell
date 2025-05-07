@@ -21,11 +21,11 @@ class Environment:
             name: agent.decision(self.obs(agent)) for name, agent in self.agents.items()
         }
         
-        # 等待所有任务完成
+        # wait all the task finish
         results = await asyncio.gather(*tasks.values())
         actions = {name: result for name, result in zip(tasks.keys(), results)}
         
-        # 执行所有动作
+        # execute all the actions
         return {
             name: await self.act(self.agents[name], action) for name, action in actions.items()
         }
