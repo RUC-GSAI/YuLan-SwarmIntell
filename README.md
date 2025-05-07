@@ -67,7 +67,7 @@ Example Replay (Pursuit Task):
 [![Pursuit Replay](assets/pursuit.mp4)](assets/pursuit.mp4) 👈🎬
 
 <div align="center">
-  <img src="vassets/pursuit.mp4" alt="Replay Video" width="70%">
+  <img src="assets/pursuit.mp4" alt="Replay Video" width="70%">
 </div>
 
 ### 4. Interactive Replay 🎮
