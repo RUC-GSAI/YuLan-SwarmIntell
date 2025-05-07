@@ -11,6 +11,8 @@ Large Language Models (LLMs) show potential for complex reasoning, yet their cap
 [![Framework Image](assets/framework.png)](assets/framework.png)
 *Figure 2: Conceptual Architecture of SwarmBench.*
 
+![results](assets/results.png)
+
 ---
 
 ## ✨ Key Features
@@ -72,7 +74,7 @@ Example Replay (Pursuit Task):
 For a more detailed, step-by-step analysis, you can use the interactive replay tool:
 
 ```bash
-python analysis/generate_replay_videos.py --log-dir ./experiment_outputs/your_generated_experiment_dir -v
+python analysis/generate_replay_videos.py --log-dir ./your_experiment_dir -v
 ```
 Replace `your_generated_experiment_dir` with the actual directory of the experiment you want to replay.
 
