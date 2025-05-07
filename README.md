@@ -41,7 +41,7 @@ Ensure you have Conda installed. Then, create the environment using the provided
 
 ```bash
 conda env create -f environment.yaml
-conda activate swarmbench # Or whatever your environment name is
+conda activate swarmbench
 ```
 
 ### 2. Run SwarmBench Evaluation 🧪
@@ -63,8 +63,8 @@ export_videos.sh
 This script will process the log files from your experiments (by default in `./experiment_outputs/`) and generate MP4 videos.
 
 Example Replay (Pursuit Task):
-[![Pursuit Replay](assets/pursuit.mp4)](assets/pursuit.mp4)
-*(Click to view video if your Markdown viewer supports it, or check the `assets` folder if you add a thumbnail)*
+
+[![Pursuit Replay](assets/pursuit.mp4)](assets/pursuit.mp4) 👈🎬
 
 ### 4. Interactive Replay 🎮
 
