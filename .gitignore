@@ -1,5 +1,4 @@
 hf_models/
-*.png
 *.txt
 k
 *ne_figs/
@@ -7,7 +6,6 @@ k
 *.csv
 *.pdf
 *.tex
-*.mp4
 latex_output/
 structured_logs
 logs
