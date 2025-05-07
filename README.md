@@ -1,5 +1,5 @@
 
-# 🐝 SwarmBench: Benchmarking LLMs' Swarm Intelligence 🤖💡
+# 🐝 SwarmBench: Benchmarking LLMs' Swarm Intelligence
 
 [![Paper Image](assets/fig1.png)](assets/fig1.png)
 *Figure 1: Natural Swarm Intelligence Inspiration and SwarmBench Tasks.*
