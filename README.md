@@ -75,7 +75,7 @@ This script will process the log files from your experiments (by default in `./e
 
 Example Replay (Pursuit Task):
 
-[![Pursuit Replay](assets/demo_pursuit)](assets/demo_pursuit) 👈🎬
+[![Pursuit Replay](assets/demo_pursuit.gif)](assets/demo_pursuit.gif) 👈🎬
 
 
 ### 4. Interactive Replay 🎮
