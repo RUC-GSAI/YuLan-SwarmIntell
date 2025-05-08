@@ -73,9 +73,21 @@ export_videos.sh
 ```
 This script will process the log files from your experiments (by default in `./experiment_outputs/`) and generate MP4 videos.
 
-Example Replay (Pursuit Task):
+Example Replay:
 
-[![Pursuit Replay](assets/demo_pursuit.gif)](assets/demo_pursuit.gif) 👈🎬
+# 🐝🎬 Pursuit
+
+[![Pursuit Replay](assets/demo_pursuit.gif)](assets/demo_pursuit.gif) 
+
+# 🐝🎬 Flocking
+
+[![Flocking Replay](assets/demo_flocking.gif)](assets/demo_flocking.gif) 
+
+# 🐝🎬 Synchronization
+
+[![Synchronization Replay](assets/demo_sync.gif)](assets/demo_sync.gif) 
+
+
 
 
 ### 4. Interactive Replay 🎮
