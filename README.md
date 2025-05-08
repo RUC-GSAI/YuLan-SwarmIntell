@@ -75,25 +75,25 @@ This script will process the log files from your experiments (by default in `./e
 
 Example Replay:
 
-# 🐝🎬 Pursuit
+## 🐝🎬 Pursuit
 
 [![Pursuit Replay](assets/demo_pursuit.gif)](assets/demo_pursuit.gif) 
 
-# 🐝🎬 Flocking
+## 🐝🎬 Synchronization
+
+[![Synchronization Replay](assets/demo_sync.gif)](assets/demo_sync.gif) 
+
+## 🐝🎬 Foraging
+
+[![Foraging Replay](assets/demo_foraging.gif)](assets/demo_foraging.gif) 
+
+## 🐝🎬 Flocking
 
 [![Flocking Replay](assets/demo_flocking.gif)](assets/demo_flocking.gif) 
 
-# 🐝🎬 Synchronization
+## 🐝🎬 Transport
 
-[![Synchronization Replay](assets/demo_sync.gif)](assets/demo_sync.gif) 
-
-# 🐝🎬 Synchronization
-
-[![Synchronization Replay](assets/demo_sync.gif)](assets/demo_sync.gif) 
-
-# 🐝🎬 Synchronization
-
-[![Synchronization Replay](assets/demo_sync.gif)](assets/demo_sync.gif) 
+[![Transport Replay](assets/demo_transport.gif)](assets/demo_transport.gif) 
 
 
 
