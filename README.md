@@ -2,6 +2,7 @@
 # 🐝 SwarmBench: Benchmarking LLMs' Swarm Intelligence
 
 [![Paper Image](assets/fig1.png)](assets/fig1.png)
+
 *Figure 1: Natural Swarm Intelligence Inspiration and SwarmBench Tasks.*
 
 **SwarmBench** is a novel benchmark designed to systematically evaluate the swarm intelligence capabilities of Large Language Models (LLMs) acting as decentralized agents. It addresses the gap in existing benchmarks by focusing on scenarios with strict constraints, such as limited local perception and communication, characteristic of natural swarms.
@@ -9,9 +10,12 @@
 Large Language Models (LLMs) show potential for complex reasoning, yet their capacity for emergent coordination in Multi-Agent Systems (MAS) under such constraints remains largely unexplored. SwarmBench aims to bridge this gap.
 
 [![Framework Image](assets/framework.png)](assets/framework.png)
+
 *Figure 2: Conceptual Architecture of SwarmBench.*
 
 ![results](assets/results.png)
+
+*Figure 3: Overview of LLM Performance on SwarmBench Tasks*
 
 ---
 
@@ -79,6 +83,7 @@ python analysis/generate_replay_videos.py --log-dir ./your_experiment_dir -v
 Replace `your_generated_experiment_dir` with the actual directory of the experiment you want to replay.
 
 [![Interactive Replay Screenshot](assets/image.png)](assets/image.png)
+
 *Screenshot of the interactive replay interface.*
 
 

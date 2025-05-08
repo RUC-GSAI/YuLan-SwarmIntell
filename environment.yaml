@@ -1,29 +1,56 @@
 name: swarmbench
 channels:
-  - nvidia
+  - conda-forge
   - defaults
 dependencies:
   - _libgcc_mutex=0.1=main
   - _openmp_mutex=5.1=1_gnu
+  - asttokens=3.0.0=pyhd8ed1ab_1
   - bzip2=1.0.8=h5eee18b_6
   - ca-certificates=2025.2.25=h06a4308_0
+  - comm=0.2.2=pyhd8ed1ab_1
+  - decorator=5.2.1=pyhd8ed1ab_0
+  - entrypoints=0.4=pyhd8ed1ab_1
+  - exceptiongroup=1.2.2=pyhd8ed1ab_1
+  - ipykernel=6.29.5=pyh3099207_0
+  - ipython=8.35.0=pyh907856f_0
+  - jedi=0.19.2=pyhd8ed1ab_1
+  - jupyter_core=5.7.2=pyh31011fe_1
   - ld_impl_linux-64=2.40=h12ee557_0
   - libffi=3.4.4=h6a678d5_1
   - libgcc-ng=11.2.0=h1234567_1
   - libgomp=11.2.0=h1234567_1
+  - libsodium=1.0.18=h36c2ea0_1
   - libstdcxx-ng=11.2.0=h1234567_1
   - libuuid=1.41.5=h5eee18b_0
+  - matplotlib-inline=0.1.7=pyhd8ed1ab_1
   - ncurses=6.4=h6a678d5_0
+  - nest-asyncio=1.6.0=pyhd8ed1ab_1
   - openssl=3.0.16=h5eee18b_0
+  - packaging=25.0=pyh29332c3_1
+  - parso=0.8.4=pyhd8ed1ab_1
+  - pexpect=4.9.0=pyhd8ed1ab_1
+  - pickleshare=0.7.5=pyhd8ed1ab_1004
   - pip=25.0=py310h06a4308_0
+  - platformdirs=4.3.7=pyh29332c3_0
+  - prompt-toolkit=3.0.51=pyha770c72_0
+  - ptyprocess=0.7.0=pyhd8ed1ab_1
+  - pure_eval=0.2.3=pyhd8ed1ab_1
+  - pygments=2.19.1=pyhd8ed1ab_0
   - python=3.10.16=he870216_1
+  - python-dateutil=2.9.0.post0=pyhff2d567_1
+  - python_abi=3.10=2_cp310
   - readline=8.2=h5eee18b_0
-  - setuptools=75.8.0=py310h06a4308_0
+  - six=1.17.0=pyhd8ed1ab_0
   - sqlite=3.45.3=h5eee18b_0
+  - stack_data=0.6.3=pyhd8ed1ab_1
   - tk=8.6.14=h39e8969_0
-  - tzdata=2025a=h04d1e81_0
+  - traitlets=5.14.3=pyhd8ed1ab_1
+  - typing_extensions=4.13.2=pyh29332c3_0
+  - wcwidth=0.2.13=pyhd8ed1ab_1
   - wheel=0.45.1=py310h06a4308_0
   - xz=5.6.4=h5eee18b_1
+  - zeromq=4.3.5=h6a678d5_0
   - zlib=1.2.13=h5eee18b_1
   - pip:
       - aiohappyeyeballs==2.5.0
@@ -32,36 +59,43 @@ dependencies:
       - aiosignal==1.3.2
       - airportsdata==20250224
       - annotated-types==0.7.0
-      - anyio==4.8.0
+      - anyio==4.9.0
+      - argon2-cffi==23.1.0
+      - argon2-cffi-bindings==21.2.0
+      - arrow==1.3.0
       - astor==0.8.1
+      - async-lru==2.0.5
       - async-timeout==5.0.1
-      - attrs==25.1.0
-      - bitsandbytes==0.45.3
+      - attrs==25.3.0
+      - babel==2.17.0
+      - beautifulsoup4==4.13.4
       - blake3==1.0.4
+      - bleach==6.2.0
       - cachetools==5.5.2
       - certifi==2025.1.31
+      - cffi==1.17.1
       - charset-normalizer==3.4.1
       - click==8.1.8
       - cloudpickle==3.1.1
+      - colorama==0.4.6
       - colorful==0.5.6
       - compressed-tensors==0.9.1
       - contourpy==1.3.1
-      - cupy-cuda12x==13.4.0
       - cycler==0.12.1
+      - debugpy==1.8.14
+      - defusedxml==0.7.1
       - depyf==0.18.0
       - dill==0.3.9
       - diskcache==5.6.3
       - distlib==0.3.9
       - distro==1.9.0
-      - dnspython==2.7.0
       - einops==0.8.1
-      - email-validator==2.2.0
-      - exceptiongroup==1.2.2
+      - executing==2.2.0
       - fastapi==0.115.11
-      - fastapi-cli==0.0.7
-      - fastrlock==0.8.3
+      - fastjsonschema==2.21.1
       - filelock==3.17.0
       - fonttools==4.56.0
+      - fqdn==1.5.1
       - frozenlist==1.5.0
       - fsspec==2025.3.0
       - gguf==0.10.0
@@ -70,37 +104,51 @@ dependencies:
       - googleapis-common-protos==1.69.1
       - grpcio==1.70.0
       - h11==0.14.0
-      - httpcore==1.0.7
+      - httpcore==1.0.8
       - httptools==0.6.4
       - httpx==0.28.1
       - huggingface-hub==0.29.2
       - idna==3.10
       - importlib-metadata==8.6.1
-      - iniconfig==2.0.0
       - interegular==0.3.3
+      - ipywidgets==8.1.6
+      - isoduration==20.11.0
       - jinja2==3.1.6
       - jiter==0.8.2
+      - joblib==1.4.2
+      - json5==0.12.0
+      - jsonpointer==3.0.0
       - jsonschema==4.23.0
       - jsonschema-specifications==2024.10.1
+      - jupyter==1.1.1
+      - jupyter-client==8.6.3
+      - jupyter-console==6.6.3
+      - jupyter-events==0.12.0
+      - jupyter-lsp==2.2.5
+      - jupyter-server==2.15.0
+      - jupyter-server-terminals==0.5.3
+      - jupyterlab==4.4.1
+      - jupyterlab-pygments==0.3.0
+      - jupyterlab-server==2.27.3
+      - jupyterlab-widgets==3.0.14
       - kiwisolver==1.4.8
       - lark==1.2.2
-      - linkify-it-py==2.0.3
-      - llvmlite==0.43.0
       - lm-format-enforcer==0.10.11
-      - markdown-it-py==3.0.0
       - markupsafe==3.0.2
       - matplotlib==3.10.1
-      - mdit-py-plugins==0.4.2
-      - mdurl==0.1.2
-      - memray==1.16.0
       - mistral-common==1.5.3
+      - mistune==3.1.3
       - mpmath==1.3.0
       - msgpack==1.1.0
       - msgspec==0.19.0
       - multidict==6.1.0
-      - nest-asyncio==1.6.0
+      - natsort==8.4.0
+      - nbclient==0.10.2
+      - nbconvert==7.16.6
+      - nbformat==5.10.4
       - networkx==3.4.2
-      - numba==0.60.0
+      - notebook==7.4.1
+      - notebook-shim==0.2.4
       - numpy==2.2.3
       - nvidia-cublas-cu12==12.4.5.8
       - nvidia-cuda-cupti-cu12==12.4.127
@@ -115,78 +163,97 @@ dependencies:
       - nvidia-nccl-cu12==2.21.5
       - nvidia-nvjitlink-cu12==12.4.127
       - nvidia-nvtx-cu12==12.4.127
-      - openai==1.65.4
+      - openai==1.65.5
       - opencensus==0.11.4
       - opencensus-context==0.1.3
       - opencv-python-headless==4.11.0.86
       - outlines==0.1.11
       - outlines-core==0.1.26
-      - packaging==24.2
+      - overrides==7.7.0
+      - pandas==2.2.3
+      - pandocfilters==1.5.1
       - partial-json-parser==0.2.1.1.post5
+      - pdf2image==1.17.0
       - pillow==11.1.0
-      - platformdirs==4.3.6
-      - pluggy==1.5.0
       - prometheus-client==0.21.1
       - prometheus-fastapi-instrumentator==7.0.2
       - propcache==0.3.0
       - proto-plus==1.26.0
       - protobuf==5.29.3
       - psutil==7.0.0
+      - pulp==3.1.1
       - py-cpuinfo==9.0.0
       - py-spy==0.4.0
       - pyasn1==0.6.1
       - pyasn1-modules==0.4.1
-      - pybind11==2.13.6
       - pycountry==24.6.1
+      - pycparser==2.22
       - pydantic==2.10.6
       - pydantic-core==2.27.2
-      - pygments==2.19.1
+      - pygame==2.6.1
       - pyparsing==3.2.1
-      - pytest==8.3.5
-      - python-dateutil==2.9.0.post0
+      - pyperclip==1.9.0
       - python-dotenv==1.0.1
-      - python-multipart==0.0.20
+      - python-json-logger==3.3.0
+      - python-louvain==0.16
+      - pytz==2025.2
       - pyyaml==6.0.2
-      - pyzmq==26.2.1
-      - ray==2.40.0
+      - pyzmq==26.4.0
+      - ray==2.43.0
+      - readchar==4.2.1
       - referencing==0.36.2
       - regex==2024.11.6
       - requests==2.32.3
-      - rich==13.9.4
-      - rich-toolkit==0.13.2
-      - rpds-py==0.23.1
+      - rfc3339-validator==0.1.4
+      - rfc3986-validator==0.1.1
+      - rpds-py==0.24.0
       - rsa==4.9
       - safetensors==0.5.3
+      - scikit-learn==1.6.1
+      - scipy==1.15.2
+      - seaborn==0.13.2
+      - send2trash==1.8.3
+      - sentence-transformers==4.1.0
       - sentencepiece==0.2.0
-      - shellingham==1.5.4
-      - six==1.17.0
+      - setuptools==79.0.0
       - smart-open==7.1.0
       - sniffio==1.3.1
+      - socksio==1.0.0
+      - soupsieve==2.7
       - starlette==0.46.1
       - sympy==1.13.1
-      - textual==2.1.2
+      - terminado==0.18.1
+      - threadpoolctl==3.6.0
       - tiktoken==0.9.0
+      - tinycss2==1.4.0
       - tokenizers==0.21.0
       - tomli==2.2.1
       - torch==2.5.1
       - torchaudio==2.5.1
       - torchvision==0.20.1
+      - tornado==6.4.2
       - tqdm==4.67.1
       - transformers==4.49.0.dev0
       - triton==3.1.0
-      - typer==0.15.2
-      - typing-extensions==4.12.2
-      - uc-micro-py==1.0.3
-      - urllib3==2.3.0
+      - types-python-dateutil==2.9.0.20241206
+      - tzdata==2025.2
+      - uri-template==1.3.0
+      - urllib3==2.4.0
+      - uv==0.6.16
       - uvicorn==0.34.0
       - uvloop==0.21.0
       - virtualenv==20.29.3
       - vllm==0.7.2
       - watchfiles==1.0.4
+      - webcolors==24.11.1
+      - webencodings==0.5.1
+      - websocket-client==1.8.0
       - websockets==15.0.1
+      - widgetsnbextension==4.0.14
+      - wordcloud==1.9.4
       - wrapt==1.17.2
       - xformers==0.0.28.post3
-      - xgrammar==0.1.11
+      - xgrammar==0.1.15
       - yarl==1.18.3
       - zipp==3.21.0
 prefix: /home/ruankai/anaconda3/envs/swarmbench
