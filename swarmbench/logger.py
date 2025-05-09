@@ -58,11 +58,11 @@ class SwarmLogger(Logger):
         
         game_state = {
             "timestamp": timestamp,
-            "level": env.level,
+            "task": env.task,
             "round": round_num,
             "grid": grid_list,
             "agents": agents_info,
-            **env.levels[env.level].level_obs(None),
+            **env.tasks[env.task].task_obs(None),
             "messages": messages
         }
         self.game_logs.append(game_state)
@@ -76,7 +76,7 @@ class SwarmLogger(Logger):
         
         agent_log = {
             "timestamp": time.time(),
-            "level": env.level,
+            "task": env.task,
             "round": env.round,
             "agent_id": agent_id,
             "view": view_list,

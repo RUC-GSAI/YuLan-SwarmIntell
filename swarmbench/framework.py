@@ -44,10 +44,10 @@ class SwarmFramework:
             return 'done'
         return 'running'
 
-    def run_level(self, model, level, log_dir=None,
+    def run_task(self, model, task, log_dir=None,
                   num_agents=10, max_round=100, width=12, height=12, seed=42, view_size=9):
         if self.status != 'pending':
-            raise RuntimeError(f'Cannot run level because level is already {self.status}.')
+            raise RuntimeError(f'Cannot run task because task is already {self.status}.')
         env_name = self.name
         
         # Prepare agent parameters
@@ -57,7 +57,7 @@ class SwarmFramework:
         # Prepare logger parameters
         meta = {
             'model': model.model if isinstance(model, ModelConfig) else [m.model for m in model],
-            'level': level,
+            'task': task,
             'num_agents': num_agents,
             'max_round': max_round,
             'width': width,
@@ -68,7 +68,7 @@ class SwarmFramework:
         logger_args = {"log_dir": log_dir, "meta": meta}
         
         # Prepare environment parameters
-        env_args = {"level": level, "seed": seed, "max_round": max_round,
+        env_args = {"task": task, "seed": seed, "max_round": max_round,
                     'width': width, 'height': height, 'view_size': view_size}
 
         self.framework = Framework()
@@ -94,11 +94,11 @@ class SwarmFramework:
         return cfg
 
     @classmethod
-    def submit(cls, name, model, level, log_dir=None,
+    def submit(cls, name, model, task, log_dir=None,
                num_agents=10, max_round=100, width=12, height=12, seed=42, view_size=9):
         kwargs = {
             'model': model,
-            'level': level,
+            'task': task,
             'log_dir': log_dir,
             'num_agents': num_agents,
             'max_round': max_round,
@@ -118,7 +118,7 @@ class SwarmFramework:
             cls.instances[name] = cls(name=name)
 
         def wrapper(name):
-            cls.instances[name].run_level(**cls.submission[name])
+            cls.instances[name].run_task(**cls.submission[name])
 
         def daemon():
             max_name_len = max([len(name) for name in cls.submission])

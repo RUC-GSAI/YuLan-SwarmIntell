@@ -5,7 +5,7 @@ from swarmbench.physics import Mesh
 from random import Random
 
 
-class Level:
+class Task:
 
     def __init__(self, seed=42):
         self.seed = seed
@@ -20,7 +20,7 @@ class Level:
     def update(self, env, actions):
         pass
 
-    def level_obs(self, agent):
+    def task_obs(self, agent):
         return {}
 
     def desc(self):
@@ -46,7 +46,7 @@ def spread(env, x0, x1, y0, y1, rng, symbol='A'):
                 env.meshes.append(agent_mesh)
                 break
 
-class Transport(Level):
+class Transport(Task):
 
     def __init__(self, seed=42):
         super().__init__(seed)
@@ -54,7 +54,7 @@ class Transport(Level):
         self.score = 0
 
     def reset(self, env):
-        # The first level: the exit on the right is blocked by obstacles, and at least 5 bots need to push it
+        # The first task: the exit on the right is blocked by obstacles, and at least 5 bots need to push it
         # Set the walls
         self.escaped = set()
         box_width = 4
@@ -110,7 +110,7 @@ class Transport(Level):
                 self.escaped.add(name)
                 self.score += (env.max_round - env.round) / env.max_round
 
-    def level_obs(self, agent):
+    def task_obs(self, agent):
         if agent is None:
             return {'score': self.score}
         return {}
@@ -122,7 +122,7 @@ class Transport(Level):
         )
 
 
-class Flocking(Level):
+class Flocking(Task):
     def __init__(self, seed=42):
         super().__init__()
         self.target_shape = None
@@ -187,7 +187,7 @@ class Flocking(Level):
         self.score = max(new_score, self.score)
         print(f'init dis: {self.init_dis}, current dis: {self.cur_dis}, score: {self.score}')
 
-    def level_obs(self, agent):
+    def task_obs(self, agent):
         if agent is None:
             return {'score': self.score}
         return {}
@@ -198,7 +198,7 @@ class Flocking(Level):
                 f'{self.shape_desc}')
 
 
-class Pursuit(Level):
+class Pursuit(Task):
     def __init__(self, seed=42):
         super().__init__(seed)
         self.prey = None
@@ -273,7 +273,7 @@ class Pursuit(Level):
                 self.prey.move(env.grid, env.mesh_map, target[0], target[1])
                 self.prey.move(env.grid, env.mesh_map, target[2], target[3])
 
-    def level_obs(self, agent):
+    def task_obs(self, agent):
         return {'score': self.score}
 
     def desc(self):
@@ -285,7 +285,7 @@ class Pursuit(Level):
                 f'Once it is caught, you will earn a point, and a new prey will spawn somewhere on the map.')
 
 
-class Synchronization(Level):
+class Synchronization(Task):
     def __init__(self, seed=42):
         super().__init__(seed)
         self.agent_state = {}
@@ -308,7 +308,7 @@ class Synchronization(Level):
             env.grid[i, j] = 'A' if self.agent_state[name] else 'a'
         self.score = 0
 
-    def level_obs(self, agent):
+    def task_obs(self, agent):
         if agent is None:
             return {'score': self.score}
         return {'light_on': self.agent_state[agent.name]}
@@ -340,7 +340,7 @@ class Synchronization(Level):
                 'while agents with lights off start with a dollar sign ($).')
 
 
-class Foraging(Level):
+class Foraging(Task):
     def __init__(self, seed=42):
         super().__init__(seed)
         self.food_mesh = None
@@ -390,7 +390,7 @@ class Foraging(Level):
         spread(env, 1, env.width - 2, 1, env.height - 2, self.rng, 'a')
         self.score = 0
 
-    def level_obs(self, agent):
+    def task_obs(self, agent):
         if agent is None:
             return {'score': self.score}
         return {'carrying_food': self.food_state[agent.name]}

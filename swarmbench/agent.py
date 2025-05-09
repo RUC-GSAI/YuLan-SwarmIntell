@@ -56,7 +56,7 @@ class SwarmAgent(Agent):
             return "Unable to get observation data, please wait for the next round."
         
         # Extract information from the observation
-        level = obs.get('level', None)
+        task = obs.get('task', None)
         round_num = obs.get('round', 0)
         view = obs.get('view', None)
         # view[view.shape[0] // 2, view.shape[1] // 2] = 'Y'
@@ -83,10 +83,10 @@ class SwarmAgent(Agent):
         for agent_name, msg in msgs.items():
             messages_str += f"Message: \"{msg}\"\n"
 
-        task_desc = level.desc()
+        task_desc = task.desc()
 
-        level_obs = level.level_obs(self)
-        level_obs_str = '\n'.join(f'{k}: {v}' for k, v in level_obs.items())
+        task_obs = task.task_obs(self)
+        task_obs_str = '\n'.join(f'{k}: {v}' for k, v in task_obs.items())
 
         # Construct the complete prompt
         self.prompt = f"""You are Agent {name}, operating in a multi-agent environment. Your goal is to complete the task through exploration and collaboration.
@@ -100,7 +100,7 @@ Your recent {self.memory}-step vision (not the entire map):
 {view_str}
 
 Your current observation:
-{level_obs_str}
+{task_obs_str}
 
 Message you received:
 {messages_str}

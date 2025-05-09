@@ -5,7 +5,7 @@ import random
 import time
 from colorama import init, Fore, Back, Style
 from framework.env import Environment
-from swarmbench.level import *
+from swarmbench.task import *
 from swarmbench.physics import Mesh, Node
 
 dirc_map = {
@@ -17,10 +17,10 @@ dirc_map = {
 
 
 class SwarmEnvironment(Environment):
-    def __init__(self, env_name, agents, logger, level=1,
+    def __init__(self, env_name, agents, logger, task=1,
                  max_round=100, width=12, height=12, seed=42, view_size=9):
         super().__init__(env_name, agents, logger)
-        self.level = level
+        self.task = task
         self.width = width
         self.height = height
         self.grid = np.full((self.height, self.width), '.', dtype=str)
@@ -28,7 +28,7 @@ class SwarmEnvironment(Environment):
         self.done = False
         self.messages = []
         # self.agents_pos = {}
-        self.levels = {
+        self.tasks = {
             'Transport': Transport(seed),
             'Flocking': Flocking(seed),
             'Pursuit': Pursuit(seed),
@@ -65,7 +65,7 @@ class SwarmEnvironment(Environment):
         self.round = 0
         self.meshes = []
         self.agent_meshes = {}
-        self.levels[self.level].reset(self)
+        self.tasks[self.task].reset(self)
 
         # log init state
         self.logger.log_game_state(self, 0, time.time())
@@ -74,8 +74,8 @@ class SwarmEnvironment(Environment):
 
     def is_done(self):
         if not self.done:
-            level_done = self.levels[self.level].is_done(self)
-            if level_done or self.round >= self.max_round:
+            task_done = self.tasks[self.task].is_done(self)
+            if task_done or self.round >= self.max_round:
                 self.done = True
                 return True
             return False
@@ -85,10 +85,10 @@ class SwarmEnvironment(Environment):
         if agent is None:
             # return global state
             return {
-                'level': self.levels[self.level],
+                'task': self.tasks[self.task],
                 'round': self.round,
                 'grid': self.grid.copy(),
-                **self.levels[self.level].level_obs(None)
+                **self.tasks[self.task].task_obs(None)
             }
 
         name = agent.name
@@ -98,13 +98,13 @@ class SwarmEnvironment(Environment):
         visible_messages = self.get_agent_visible_messages(name)
 
         return {
-            'level': self.levels[self.level],
+            'task': self.tasks[self.task],
             'round': self.round,
             'view': view,
             'position': {'x': x, 'y': y},
             'messages': visible_messages,
             'name': name,
-            **self.levels[self.level].level_obs(agent)
+            **self.tasks[self.task].task_obs(agent)
         }
 
     def notify(self, agent):
@@ -210,7 +210,7 @@ class SwarmEnvironment(Environment):
 
     def update(self):
         self.update_B()
-        self.levels[self.level].update(self, self.actions)
+        self.tasks[self.task].update(self, self.actions)
         for name, mesh in self.agent_meshes.items():
             i, j = mesh.pos
             if not (0 <= i < self.height and 0 <= j < self.width):
