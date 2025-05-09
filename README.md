@@ -112,3 +112,16 @@ Replace `your_generated_experiment_dir` with the actual directory of the experim
 *Screenshot of the interactive replay interface.*
 
 
+# BibTeX
+
+```bibtex
+@article{ruan2025benchmarkingllmsswarmintelligence,
+      title={Benchmarking LLMs' Swarm intelligence}, 
+      author={Kai Ruan and Mowen Huang and Ji-Rong Wen and Hao Sun},
+      year={2025},
+      eprint={2505.04364},
+      archivePrefix={arXiv},
+      primaryClass={cs.MA},
+      url={https://arxiv.org/abs/2505.04364}, 
+}
+```
