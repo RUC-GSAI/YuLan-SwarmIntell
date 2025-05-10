@@ -173,6 +173,9 @@ class Flocking(Task):
         num_agents = len(env.agents)
         self.target_shape = np.full((num_agents // 4 + 1, num_agents // 4 + 1), 'A', dtype=str)
         self.target_shape[1:-1, 1:-1] = '.'
+        self.shape_desc = '\n'.join([' '.join([f'{self.target_shape[i, j]}'
+                                     for j in range(self.target_shape.shape[1])])
+                                     for i in range(self.target_shape.shape[0])])
         spread(env, 1, env.width - 2, 1, env.height - 2, self.rng)
         self.init_dis = self.emd(env.grid)
         self.cur_dis = self.init_dis
