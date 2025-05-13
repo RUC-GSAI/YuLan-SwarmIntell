@@ -144,7 +144,7 @@ class Transport(Task):
         self.escaped = set()
         box = self.rng.choice(Transport.boxes)
         box_mesh = Mesh(
-        (
+            (
                 (box['pos'][0] + env.grid.shape[0]) % env.grid.shape[0],
                 (box['pos'][1] + env.grid.shape[1]) % env.grid.shape[1]
             ),
