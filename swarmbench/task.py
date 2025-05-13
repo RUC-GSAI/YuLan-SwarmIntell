@@ -48,43 +48,115 @@ def spread(env, x0, x1, y0, y1, rng, symbol='A'):
 
 class Transport(Task):
 
+    boxes = [
+        {
+            'shape': [
+                ['B', 'B', 'B', '.', '.'],
+                ['B', 'B', 'B', '.', '.'],
+                ['B', 'B', 'B', '.', '.'],
+                ['.', 'B', 'B', 'B', 'B'],
+            ],
+            'pos': (-4, -5),
+            'gap': ((-1, None), (-4, None)),
+        },
+        {
+            'shape': [
+                ['.', '.', 'B', 'B', 'B'],
+                ['.', '.', 'B', 'B', 'B'],
+                ['.', '.', 'B', 'B', 'B'],
+                ['B', 'B', 'B', 'B', '.'],
+            ],
+            'pos': (-4, 0),
+            'gap': ((-1, None), (None, 4)),
+        },
+        {
+            'shape': [
+                ['.', '.', '.', 'B'],
+                ['.', '.', '.', 'B'],
+                ['B', 'B', 'B', 'B'],
+                ['B', 'B', 'B', 'B'],
+                ['B', 'B', 'B', '.'],
+            ],
+            'pos': (0, -4),
+            'gap': ((None, 4), (-1, None)),
+        },
+        {
+            'shape': [
+                ['B', 'B', 'B', '.'],
+                ['B', 'B', 'B', 'B'],
+                ['B', 'B', 'B', 'B'],
+                ['.', '.', '.', 'B'],
+                ['.', '.', '.', 'B'],
+            ],
+            'pos': (-5, -4),
+            'gap': ((-4, None), (-1, None)),
+        },
+        {
+            'shape': [
+                ['B', '.', '.', '.'],
+                ['B', '.', '.', '.'],
+                ['B', 'B', 'B', 'B'],
+                ['B', 'B', 'B', 'B'],
+                ['.', 'B', 'B', 'B'],
+            ],
+            'pos': (0, 0),
+            'gap': ((None, 4), (None, 1)),
+        },
+        {
+            'shape': [
+                ['.', 'B', 'B', 'B'],
+                ['B', 'B', 'B', 'B'],
+                ['B', 'B', 'B', 'B'],
+                ['B', '.', '.', '.'],
+                ['B', '.', '.', '.'],
+            ],
+            'pos': (-5, 0),
+            'gap': ((-4, None), (None, 1)),
+        },
+        {
+            'shape': [
+                ['B', 'B', 'B', 'B', '.'],
+                ['.', '.', 'B', 'B', 'B'],
+                ['.', '.', 'B', 'B', 'B'],
+                ['.', '.', 'B', 'B', 'B'],
+            ],
+            'pos': (0, 0),
+            'gap': ((None, 1), (None, 4)),
+        },
+        {
+            'shape': [
+                ['.', 'B', 'B', 'B', 'B'],
+                ['B', 'B', 'B', '.', '.'],
+                ['B', 'B', 'B', '.', '.'],
+                ['B', 'B', 'B', '.', '.'],
+            ],
+            'pos': (0, -5),
+            'gap': ((None, 1), (-4, None)),
+        }
+    ]
+
     def __init__(self, seed=42):
         super().__init__(seed)
         self.escaped = set()
         self.score = 0
 
     def reset(self, env):
-        # The first task: the exit on the right is blocked by obstacles, and at least 5 bots need to push it
-        # Set the walls
         self.escaped = set()
-        box_width = 4
-        box_height = 4
-        exit_i, exit_j = self.rng.choice([(0, 1), (0, -1), (1, 0), (-1, 0)])
-
-        box_i = self.rng.randint(1, env.height - box_height - 1)
-        box_j = self.rng.randint(1, env.width - box_width - 1)
-        if exit_i == 1:
-            box_i = env.height - box_height
-        elif exit_i == -1:
-            box_i = 0
-        if exit_j == 1:
-            box_j = env.width - box_width
-        elif exit_j == -1:
-            box_j = 0
-
+        box = self.rng.choice(Transport.boxes)
+        box_mesh = Mesh(
+        (
+                (box['pos'][0] + env.grid.shape[0]) % env.grid.shape[0],
+                (box['pos'][1] + env.grid.shape[1]) % env.grid.shape[1]
+            ),
+            np.array(box['shape'], dtype=str), False, name='B'
+        )
         wall_shape = np.full_like(env.grid, 'W', dtype=str)
         wall_shape[1:-1, 1:-1] = '.'
-        if exit_i != 0:
-            wall_shape[0 if exit_i == -1 else -1, box_j:box_j + box_width] = '.'
-        if exit_j != 0:
-            wall_shape[box_i:box_i + box_height, 0 if exit_j == -1 else -1] = '.'
+        wall_shape[box['gap'][0][0]:box['gap'][0][1], box['gap'][1][0]:box['gap'][1][1]] = '.'
 
         wall_mesh = Mesh((0, 0), wall_shape, static=True, name='W')
         wall_mesh.place(env.grid, env.mesh_map)
         env.meshes.append(wall_mesh)
-
-        box_mesh = Mesh((box_i, box_j), np.full((box_height, box_width), 'B', dtype=str),
-                        static=False, name='B')
         box_mesh.place(env.grid, env.mesh_map)
         box_mesh.mass = 5
         env.meshes.append(box_mesh)
