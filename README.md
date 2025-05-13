@@ -112,6 +112,13 @@ Replace `your_generated_experiment_dir` with the actual directory of the experim
 *Screenshot of the interactive replay interface.*
 
 
+## Future Plans
+Here's a list of some stuff that will be added to the codebase!
+
+- [ ] Add RLVR training & testing code
+- [ ] RLVR trained Model 
+- [ ] Include full dataset
+
 # BibTeX
 
 ```bibtex
