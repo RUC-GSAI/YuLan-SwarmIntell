@@ -69,7 +69,7 @@ from swarmbench import SwarmFramework
 if __name__ == '__main__':
     name = 1
     for task in ('Transport', 'Pursuit'): #####  {'Transport', 'Pursuit', 'Synchronization', 'Foraging', 'Flocking'}
-        for model in ('gpt-4o-mini', 'gpt-3.5-turbo'): ##### Models
+        for model in ('gpt-4o-mini', 'llama-3.1-70b'): ##### Models
             for seed in (27, 42):
                 SwarmFramework.submit(
                     f'exp_{name}',
