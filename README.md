@@ -81,7 +81,7 @@ if __name__ == '__main__':
                     width=10,
                     height=10,
                     seed=seed,
-                    view_size=9
+                    view_size=5
                 )
                 name += 1
 
