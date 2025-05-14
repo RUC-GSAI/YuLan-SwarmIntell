@@ -547,12 +547,14 @@ def _generate_images_from_latex(latex_dir, image_prefix="frame", dpi=150, force_
                 if not os.path.exists(pdf_file_path) or force_recompile:
                     compile_process = subprocess.run(
                         ["pdflatex", "-interaction=nonstopmode", "-output-directory", pdf_dir, latex_file],
-                        capture_output=True, text=True, timeout=60 # Increased timeout
+                        capture_output=True, text=True, errors='ignore', timeout=60 # ADDED errors='ignore' HERE
                     )
                     if compile_process.returncode != 0:
-                        print(f"{Fore.RED}Error compiling {latex_file}:{Style.RESET_ALL}\n{compile_process.stdout}\n{compile_process.stderr}")
+                        # The stdout/stderr might now be incomplete if bad bytes were ignored,
+                        # but the error from pdflatex (if any) should still be indicated by returncode.
+                        print(f"{Fore.RED}Error compiling {latex_file}:{Style.RESET_ALL}\nPDFLATEX STDOUT:\n{compile_process.stdout}\nPDFLATEX STDERR:\n{compile_process.stderr}")
                         # Try to continue with other files if one fails
-                        continue 
+                        continue
                 
                 # Convert PDF to PNG
                 if os.path.exists(pdf_file_path): # Check if PDF was created
@@ -748,6 +750,10 @@ if __name__ == '__main__':
     parser.add_argument('--no-gifsicle', action='store_true',
                         help='Disable optimization attempt with gifsicle even if it is installed.')
 
+    parser.add_argument('--model-name', type=str, default=None,
+                        help='Specify the model name to filter game logs for export/animation. Processes the first match found in meta_log.json.')
+    # --- END OF ADDITION ---
+
     args = parser.parse_args()
 
     # If creating video or GIF, ensure LaTeX export is also triggered
@@ -759,18 +765,73 @@ if __name__ == '__main__':
 
     log_dir = args.log_dir; TIME = args.time; cmd_show_views = args.show_views
     max_grids_per_row_terminal = args.max_grids; debug_mode = args.debug
-
-    # --- Load Metadata, Game Steps & Agent Data (Your existing robust loading logic) ---
+    # --- Load Metadata, Game Steps & Agent Data ---
     meta_log_path = os.path.join(log_dir, 'meta_log.json')
-    if not os.path.exists(meta_log_path): print(f"{Fore.RED}Meta log not found: {meta_log_path}"); sys.exit(1)
+    if not os.path.exists(meta_log_path):
+        print(f"{Fore.RED}Meta log not found: {meta_log_path}{Style.RESET_ALL}")
+        sys.exit(1)
     try:
-        with open(meta_log_path) as f: meta = json.load(f)
-    except Exception as e: print(f"{Fore.RED}Error reading meta log {meta_log_path}: {e}"); sys.exit(1)
+        # Ensure UTF-8 encoding when reading JSON
+        with open(meta_log_path, 'r', encoding='utf-8') as f:
+            meta = json.load(f)
+    except Exception as e:
+        print(f"{Fore.RED}Error reading meta log {meta_log_path}: {e}{Style.RESET_ALL}")
+        sys.exit(1)
 
-    first_timestamp = next(iter(meta), None)
-    if not first_timestamp: print(f"{Fore.RED}No games found."); sys.exit(1)
-    timestamp = first_timestamp; info = meta[timestamp]
-    # print(f"{Style.BRIGHT}Loading game: {timestamp}: {info}{Style.RESET_ALL}") # Keep this for interactive
+    if not meta: # Check if meta log is empty or invalid
+        print(f"{Fore.RED}Meta log is empty or invalid: {meta_log_path}{Style.RESET_ALL}")
+        sys.exit(1)
+
+    timestamp = None
+    info = None
+
+    if args.model_name:
+        print(f"{Style.BRIGHT}Attempting to find game log for model: {args.model_name}{Style.RESET_ALL}")
+        found_match = False
+        # Iterate through meta log entries. Python 3.7+ dicts preserve insertion order.
+        # For older versions, the "first" match might not be chronologically first.
+        for ts_key, game_info_val in meta.items():
+            if isinstance(game_info_val, dict) and game_info_val.get('model') == args.model_name:
+                timestamp = ts_key
+                info = game_info_val
+                found_match = True
+                print(f"{Fore.GREEN}Found matching game log for model '{args.model_name}' with timestamp: {timestamp}{Style.RESET_ALL}")
+                break # Process the first match found
+        if not found_match:
+            print(f"{Fore.RED}Error: No game log found for model name '{args.model_name}' in {meta_log_path}{Style.RESET_ALL}")
+            print(f"Available models/entries in meta_log (first few shown if many):")
+            count = 0
+            for ts_example, info_example in meta.items():
+                if isinstance(info_example, dict):
+                    print(f"  Timestamp: {ts_example}, Model: {info_example.get('model', 'N/A')}")
+                else:
+                    print(f"  Timestamp: {ts_example}, Invalid entry format.")
+                count += 1
+                if count >= 5: # Print a few examples
+                    if len(meta) > 5: print("  ...")
+                    break
+            sys.exit(1)
+    else:
+        # Original behavior: process the first entry if no model_name is specified
+        try:
+            # Get the first key from the meta dictionary
+            timestamp = next(iter(meta.keys()))
+            info = meta[timestamp]
+            print(f"{Style.BRIGHT}No model name specified. Processing the first game log found in meta_log.{Style.RESET_ALL}")
+            print(f"  Timestamp: {timestamp}, Model: {info.get('model', 'N/A') if isinstance(info, dict) else 'N/A (invalid info format)'}")
+        except StopIteration: # Handles empty meta dict
+            print(f"{Fore.RED}No games found in meta log: {meta_log_path}{Style.RESET_ALL}")
+            sys.exit(1)
+        except KeyError: # Should not happen if next(iter()) worked, but good for safety
+            print(f"{Fore.RED}Error accessing first game entry in meta log.{Style.RESET_ALL}")
+            sys.exit(1)
+
+    if not timestamp or not info: # Should be caught by earlier checks, but as a final safeguard
+        print(f"{Fore.RED}Fatal: Could not determine a game log to process. Timestamp or info is missing.{Style.RESET_ALL}")
+        sys.exit(1)
+
+    # The rest of the script will now use the selected 'timestamp' and 'info'
+    print(f"{Style.BRIGHT}Selected game for processing: Timestamp {timestamp}, Model {info.get('model', 'N/A')}{Style.RESET_ALL}")
     game_log_path = os.path.join(log_dir, f'game_log_{timestamp}.json')
     agent_log_path = os.path.join(log_dir, f'agent_log_{timestamp}.json')
 
