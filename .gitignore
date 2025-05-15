@@ -12,6 +12,12 @@ logs
 experiment_*
 results
 
+*.aux
+*.fdb*
+*.fls
+*.synctex*
+*.gif
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
