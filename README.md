@@ -103,21 +103,31 @@ Example Replay:
 
 ## 🐝🎬 Pursuit
 
+o4-mini, the best out of 5 runs.
+
 [![Pursuit Replay](assets/Pursuit_o4-mini_best.gif)](assets/Pursuit_o4-mini_best.gif) 
 
 ## 🐝🎬 Synchronization
+
+o4-mini, the best out of 5 runs.
 
 [![Synchronization Replay](assets/Synchronize_o4-mini_best.gif)](assets/Synchronize_o4-mini_best.gif) 
 
 ## 🐝🎬 Foraging
 
+o4-mini, the best out of 5 runs.
+
 [![Foraging Replay](assets/Foraging_o4-mini_best.gif)](assets/Foraging_o4-mini_best.gif) 
 
 ## 🐝🎬 Flocking
 
+o4-mini, the best out of 5 runs.
+
 [![Flocking Replay](assets/Flocking_o4-mini_best.gif)](assets/Flocking_o4-mini_best.gif) 
 
 ## 🐝🎬 Transport
+
+o4-mini, the best out of 5 runs.
 
 [![Transport Replay](assets/Transport_o4-mini_best.gif)](assets/Transport_o4-mini_best.gif) 
 
