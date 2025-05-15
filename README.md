@@ -77,23 +77,23 @@ Example Replay:
 
 ## 🐝🎬 Pursuit
 
-[![Pursuit Replay](assets/demo_pursuit.gif)](assets/demo_pursuit.gif) 
+[![Pursuit Replay](assets/Pursuit_o4-mini_best.gif)](assets/Pursuit_o4-mini_best.gif) 
 
 ## 🐝🎬 Synchronization
 
-[![Synchronization Replay](assets/demo_sync.gif)](assets/demo_sync.gif) 
+[![Synchronization Replay](assets/Synchronize_o4-mini_best.gif)](assets/Synchronize_o4-mini_best.gif) 
 
 ## 🐝🎬 Foraging
 
-[![Foraging Replay](assets/demo_foraging.gif)](assets/demo_foraging.gif) 
+[![Foraging Replay](assets/Foraging_o4-mini_best.gif)](assets/Foraging_o4-mini_best.gif) 
 
 ## 🐝🎬 Flocking
 
-[![Flocking Replay](assets/demo_flocking.gif)](assets/demo_flocking.gif) 
+[![Flocking Replay](assets/Flocking_o4-mini_best.gif)](assets/Flocking_o4-mini_best.gif) 
 
 ## 🐝🎬 Transport
 
-[![Transport Replay](assets/demo_transport.gif)](assets/demo_transport.gif) 
+[![Transport Replay](assets/Transport_o4-mini_best.gif)](assets/Transport_o4-mini_best.gif) 
 
 
 
