@@ -175,12 +175,17 @@ claude-3-5-haiku-20241022   |      0.60 |    ± 0.49 |     5
 ```
 
 
-## Future Plans
+## ☑️ Future Plans
 Here's a list of some stuff that will be added to the codebase!
 
 - [ ] Add RLVR training & testing code
 - [ ] RLVR trained small model for demo
 - [ ] Include full dataset
+
+
+## 🤝 Contributing to SwarmBench
+
+We enthusiastically welcome community contributions to SwarmBench! If you're passionate about advancing research in LLM swarm intelligence, we invite you to help improve the benchmark by proposing new tasks, implementing features, etc. Your insights are highly valued. For significant intellectual contributions that substantially advance the project, we are open to exploring collaborative opportunities on future research and potential academic publications, in line with standard academic practices. Please engage with us via GitHub Issues for discussions and submit Pull Requests for your contributions.
 
 # BibTeX
 
