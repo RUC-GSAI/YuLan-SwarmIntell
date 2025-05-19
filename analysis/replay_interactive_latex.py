@@ -32,7 +32,7 @@ except ImportError:
     print("Please install it using: pip install readchar")
     sys.exit(1)
 
-#  Try importing pyperclip for clipboard functionality 
+#  Try importing pyperclip for clipboard functionality
 try:
     import pyperclip
 except ImportError:
@@ -40,90 +40,31 @@ except ImportError:
     print("Install it using: pip install pyperclip")
     pyperclip = None # Set to None if import fails
 
-#  Configuration 
-DEFAULT_LOG_DIR = 'experiment_v37'
-DEFAULT_TIME = 0.2 # Currently unused due to manual control
-DEFAULT_MAX_GRIDS_PER_ROW = 6 # For terminal display of agent views if global is shown
-GRID_SEPARATOR = "  |  "
-LATEX_GRID_SEPARATOR = "~~|~~"
-LATEX_AGENT_VIEWS_PER_ROW = 4
+# Import from utils
+from utils.constants import (
+    DEFAULT_LOG_DIR, DEFAULT_TIME, DEFAULT_MAX_GRIDS_PER_ROW,
+    GRID_SEPARATOR, LATEX_AGENT_VIEWS_PER_ROW, AGENT_MESSAGE_COLORS,
+    AGENT_GRID_COLORS_MAP, DEFAULT_GRID_AGENT_COLOR, GENERIC_AGENT_GRID_COLOR
+)
+from utils.helper import get_visual_width, pad_visual_width, ansi_escape_pattern
+from utils.latex import render_terminal, generate_latex_color_definitions as generate_utils_latex_color_definitions, COLORAMA_TO_LATEX
 
-#  Colorama Initialization 
+
+#  Colorama Initialization
 init(autoreset=True)
 
-#  Agent Color Definitions 
-AGENT_MESSAGE_COLORS = [ Fore.LIGHTRED_EX, Fore.RED, Fore.LIGHTYELLOW_EX, Fore.YELLOW, Fore.LIGHTGREEN_EX, Fore.GREEN, Fore.LIGHTCYAN_EX, Fore.CYAN, Fore.LIGHTBLUE_EX, Fore.BLUE, Fore.LIGHTMAGENTA_EX, Fore.MAGENTA]
-AGENT_MESSAGE_COLORS = list(dict.fromkeys(AGENT_MESSAGE_COLORS))
-AGENT_GRID_COLORS_MAP = { Fore.LIGHTRED_EX: (Back.LIGHTRED_EX, Fore.WHITE), Fore.RED: (Back.RED, Fore.WHITE), Fore.LIGHTYELLOW_EX: (Back.LIGHTYELLOW_EX, Fore.BLACK), Fore.YELLOW: (Back.YELLOW, Fore.BLACK), Fore.LIGHTGREEN_EX: (Back.LIGHTGREEN_EX, Fore.BLACK), Fore.GREEN: (Back.GREEN, Fore.BLACK), Fore.LIGHTCYAN_EX: (Back.LIGHTCYAN_EX, Fore.BLACK), Fore.CYAN: (Back.CYAN, Fore.BLACK), Fore.LIGHTBLUE_EX: (Back.LIGHTBLUE_EX, Fore.WHITE), Fore.BLUE: (Back.BLUE, Fore.WHITE), Fore.LIGHTMAGENTA_EX: (Back.LIGHTMAGENTA_EX, Fore.BLACK), Fore.MAGENTA: (Back.MAGENTA, Fore.WHITE)}
-for msg_color in AGENT_MESSAGE_COLORS:
-    if msg_color not in AGENT_GRID_COLORS_MAP: print(f"{Fore.RED}Error: Color {msg_color} missing map! Exiting."); sys.exit(1)
-DEFAULT_GRID_AGENT_COLOR = (Back.WHITE, Fore.BLACK)
-GENERIC_AGENT_GRID_COLOR = Back.GREEN + Fore.BLACK
 
-#  ANSI Code Stripping Regex 
-ansi_escape_pattern = re.compile(r'\x1B(?:[@-Z\\-_]|\[[0-?]*[ -/]*[@-~])')
+#  Terminal Rendering Function (Unchanged) - Kept for now, might be identical to utils.latex.render_terminal
+#  If it's truly identical, it can be removed and utils.latex.render_terminal can be used directly.
+#  For now, aliasing to avoid breaking existing calls if there are subtle differences.
+_render_terminal_local = render_terminal
 
-def get_visual_width(text):
-    """Calculates the visible width of a string by removing ANSI escape codes."""
-    return len(ansi_escape_pattern.sub('', text))
 
-def pad_visual_width(text, width):
-    """Pads a string with spaces to reach a desired visual width."""
-    current_visual_width = get_visual_width(text)
-    padding = max(0, width - current_visual_width)
-    return text + ' ' * padding
+#  LaTeX Color Definitions - Kept for now, might be identical to utils.latex.generate_latex_color_definitions
+#  If it's truly identical, it can be removed and utils.latex.generate_latex_color_definitions can be used directly.
+#  For now, aliasing to avoid breaking existing calls if there are subtle differences.
+_generate_latex_color_definitions_local = generate_utils_latex_color_definitions
 
-#  Terminal Rendering Function (Unchanged) 
-def render_terminal(grid, agent_message_colors_map, coord_to_agent_id_map):
-    # (Code is identical to the previous correct version)
-    try:
-        if not isinstance(grid, (list, np.ndarray)) or not grid: return ["(Empty/invalid grid)"], 20
-        try: grid_np = np.array(grid, dtype=object)
-        except Exception as e: error_str = f"(Grid conversion err: {e})"; return [error_str], max(25, get_visual_width(error_str))
-        if grid_np.ndim != 2: return [f"(Invalid grid dim {grid_np.ndim})"], 25
-        height, width = grid_np.shape
-        if height == 0 or width == 0: return ["(Empty HxW grid)"], 18
-    except Exception as e: error_str = f"(Render Setup Error: {e})"; return [error_str], max(25, get_visual_width(error_str))
-    rendered_lines = []; max_visual_width = 0
-    header_line = "   " + " ".join(f"{i % 100:2d}" for i in range(width)); rendered_lines.append(header_line)
-    for i in range(height):
-        row_str_prefix = f"{i:2d} "; segments_for_row = []
-        for j in range(width):
-            try: cell = grid_np[i, j]; original_cell_str = str(cell) if cell is not None and str(cell).strip() != '' else '.'
-            except IndexError: original_cell_str = '?'; cell = '?'
-            color_code = ""; display_content = original_cell_str
-            agent_id_at_coord = coord_to_agent_id_map.get((i, j))
-            if agent_id_at_coord and agent_id_at_coord in agent_message_colors_map:
-                match = re.search(r'\d+$', agent_id_at_coord); agent_num_str = match.group()[-2:] if match else '?'; display_content = agent_num_str
-                message_color = agent_message_colors_map[agent_id_at_coord]
-                if original_cell_str == 'a': color_code = message_color
-                else: back_color, text_color = AGENT_GRID_COLORS_MAP.get(message_color, DEFAULT_GRID_AGENT_COLOR); color_code = back_color + text_color
-            else:
-                if original_cell_str == 'P': color_code = Back.WHITE + Fore.BLACK
-                elif original_cell_str == 'Y': color_code = Back.CYAN + Fore.BLACK
-                elif original_cell_str == 'W': color_code = Back.RED + Fore.WHITE
-                elif original_cell_str == 'B': color_code = Back.YELLOW + Fore.BLACK
-                elif original_cell_str == 'X': color_code = Back.MAGENTA + Fore.WHITE
-                elif original_cell_str == 'A': color_code = GENERIC_AGENT_GRID_COLOR; display_content = 'A'
-                elif original_cell_str == '.': display_content = '.'
-            segment_text = "{:<2}".format(display_content)
-            if color_code: segments_for_row.append(color_code + segment_text + Style.RESET_ALL)
-            else: segments_for_row.append(segment_text)
-        current_line = row_str_prefix + " ".join(segments_for_row); rendered_lines.append(current_line)
-    max_visual_width = 0;
-    for line in rendered_lines: max_visual_width = max(max_visual_width, get_visual_width(line))
-    return rendered_lines, max_visual_width
-
-#  LaTeX Color Definitions 
-COLORAMA_TO_LATEX = { Fore.LIGHTRED_EX: ("termLightRed", "1.0, 0.4, 0.4"), Fore.RED: ("termRed", "0.8, 0.0, 0.0"), Fore.LIGHTYELLOW_EX:("termLightYellow", "1.0, 1.0, 0.4"), Fore.YELLOW: ("termYellow", "0.8, 0.8, 0.0"), Fore.LIGHTGREEN_EX:("termLightGreen", "0.4, 1.0, 0.4"), Fore.GREEN: ("termGreen", "0.0, 0.8, 0.0"), Fore.LIGHTCYAN_EX: ("termLightCyan", "0.4, 1.0, 1.0"), Fore.CYAN: ("termCyan", "0.0, 0.8, 0.8"), Fore.LIGHTBLUE_EX:("termLightBlue", "0.4, 0.4, 1.0"), Fore.BLUE: ("termBlue", "0.0, 0.0, 0.8"), Fore.LIGHTMAGENTA_EX:("termLightMagenta", "1.0, 0.4, 1.0"), Fore.MAGENTA: ("termMagenta", "0.8, 0.0, 0.8"), Fore.WHITE: ("termWhite", "0.9, 0.9, 0.9"), Fore.BLACK: ("termBlack", "0.1, 0.1, 0.1"), Back.LIGHTRED_EX: ("termBgLightRed", "1.0, 0.4, 0.4"), Back.RED: ("termBgRed", "0.8, 0.0, 0.0"), Back.LIGHTYELLOW_EX:("termBgLightYellow", "1.0, 1.0, 0.4"), Back.YELLOW: ("termBgYellow", "0.8, 0.8, 0.0"), Back.LIGHTGREEN_EX:("termBgLightGreen", "0.4, 1.0, 0.4"), Back.GREEN: ("termBgGreen", "0.0, 0.8, 0.0"), Back.LIGHTCYAN_EX: ("termBgLightCyan", "0.4, 1.0, 1.0"), Back.CYAN: ("termBgCyan", "0.0, 0.8, 0.8"), Back.LIGHTBLUE_EX:("termBgLightBlue", "0.4, 0.4, 1.0"), Back.BLUE: ("termBgBlue", "0.0, 0.0, 0.8"), Back.LIGHTMAGENTA_EX:("termBgLightMagenta", "1.0, 0.4, 1.0"), Back.MAGENTA: ("termBgMagenta", "0.8, 0.0, 0.8"), Back.WHITE: ("termBgWhite", "0.9, 0.9, 0.9"), Back.BLACK: ("termBgBlack", "0.1, 0.1, 0.1"), }
-
-def generate_latex_color_definitions():
-    """Generates LaTeX \\definecolor commands."""
-    defs = []; unique_defs = {}
-    for _, (name, rgb) in COLORAMA_TO_LATEX.items():
-        if name not in unique_defs: defs.append(f"\\definecolor{{{name}}}{{rgb}}{{{rgb}}}"); unique_defs[name] = True
-    if "termBgDefault" not in unique_defs: defs.append(f"\\definecolor{{termBgDefault}}{{gray}}{{0.95}}")
-    return "\n".join(defs)
 
 def render_latex_frame(step_data, agent_message_colors_map, coord_to_agent_id_map,
                        views_by_round, all_agent_ids_in_log, game_info, timestamp,
@@ -143,7 +84,7 @@ def render_latex_frame(step_data, agent_message_colors_map, coord_to_agent_id_ma
         latex_string += "\\usepackage[table]{xcolor}\n\\usepackage{graphicx}\n\\usepackage{geometry}\n\\usepackage{float}\n"  # 添加 float 包
         latex_string += "\\geometry{a4paper, margin=0.2cm, top=0.2cm, bottom=0.2cm, left=0.2cm, right=0.2cm}\n"
         latex_string += "\\setlength{\\parindent}{0pt}\n\\setlength{\\parskip}{0pt}\n\\definecolor{darkgray}{gray}{0.3}\n\\definecolor{lightgray}{gray}{0.9}\n"
-        latex_string += generate_latex_color_definitions() + "\n\n"
+        latex_string += _generate_latex_color_definitions_local() + "\n\n"
         latex_string += "\\newcommand{\\termcell}[3]{% BgC, FgC, T\n  \\multicolumn{1}{@{}>{\\columncolor{#1}}c@{}|}{\\textcolor{#2}{\\texttt{\\detokenize{#3}}}}}\n"
         latex_string += "\\newcommand{\\termcellfg}[2]{% FgC, T\n  \\multicolumn{1}{@{}>{\\columncolor{lightgray}}c@{}|}{\\textcolor{#1}{\\texttt{\\detokenize{#2}}}}}\n"
         latex_string += "\\newcommand{\\termcellbg}[2]{% BgC, T\n  \\multicolumn{1}{@{}>{\\columncolor{#1}}c@{}|}{\\texttt{\\detokenize{#2}}}}\n"
@@ -575,7 +516,7 @@ if __name__ == '__main__':
 
                 all_rendered_grids = [];
                 if show_global_map_toggle and grid_data:
-                    try: g_lines, g_width = render_terminal(grid_data, agent_message_colors_map, coord_to_agent_id_map); all_rendered_grids.append((" Global Map ", g_lines, g_width))
+                    try: g_lines, g_width = _render_terminal_local(grid_data, agent_message_colors_map, coord_to_agent_id_map); all_rendered_grids.append((" Global Map ", g_lines, g_width))
                     except Exception as e: all_rendered_grids.append((f"Global Error", [f"{Fore.RED}(Err global: {e})"], 30))
                 elif show_global_map_toggle: all_rendered_grids.append((f"Global Error", ["(No grid data)"], 16))
                 if cmd_show_views and show_agent_views_toggle:
@@ -588,7 +529,7 @@ if __name__ == '__main__':
                         for agent_id in agents_to_render_views:
                             view_grid = agent_views_this_round.get(agent_id)
                             if view_grid:
-                                try: v_lines, v_width = render_terminal(view_grid, agent_message_colors_map, {}); agent_color = agent_message_colors_map.get(agent_id, Fore.WHITE); v_header = f"{agent_color}- View {agent_id} -{Style.RESET_ALL}"; all_rendered_grids.append((v_header, v_lines, v_width))
+                                try: v_lines, v_width = _render_terminal_local(view_grid, agent_message_colors_map, {}); agent_color = agent_message_colors_map.get(agent_id, Fore.WHITE); v_header = f"{agent_color}- View {agent_id} -{Style.RESET_ALL}"; all_rendered_grids.append((v_header, v_lines, v_width))
                                 except Exception as e: all_rendered_grids.append((f"View {agent_id} Error", [f"{Fore.RED}(Err view {agent_id}: {e})"], 30))
 
                 if all_rendered_grids:

@@ -11,7 +11,10 @@ import numpy as np
 from colorama import init, Fore, Back, Style
 from utils.constants import *
 
-#  Helper Functions for Metrics 
+#  ANSI Code Stripping Regex
+ansi_escape_pattern = re.compile(r'\x1B(?:[@-Z\\-_]|\[[0-?]*[ -/]*[@-~])')
+
+#  Helper Functions for Metrics
 def shannon_entropy(data):
     if not data: return 0.0
     counts = Counter(data)

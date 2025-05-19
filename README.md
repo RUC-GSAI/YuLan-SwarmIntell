@@ -95,7 +95,7 @@ This will run the LLM agents through the defined tasks and log the results.
 After running evaluations, you can generate replay videos of the simulations:
 
 ```bash
-export_videos.sh
+./export_videos.sh
 ```
 This script will process the log files from your experiments (by default in `./experiment_outputs/`) and generate MP4 videos.
 

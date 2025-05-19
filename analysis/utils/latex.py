@@ -14,8 +14,6 @@ import numpy as np
 from colorama import init, Fore, Back, Style
 from utils.helper import *
 from utils.constants import *
-#  ANSI Code Stripping Regex 
-ansi_escape_pattern = re.compile(r'\x1B(?:[@-Z\\-_]|\[[0-?]*[ -/]*[@-~])')
 
 try:
     import pandas as pd
