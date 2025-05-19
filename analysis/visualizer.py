@@ -169,6 +169,12 @@ class EmbeddingCache:
                 
         return embeddings
 
+# Import metrics module
+from utils.metrics import (
+    calculate_all_metrics, ACTION_VECTORS, MOVE_ACTIONS,
+    ACTUAL_MOVE_ACTIONS, COORDINATION_ACTIONS
+)
+
 # Global embedding cache instance
 embedding_cache = None
 metrics_cache = {}
@@ -1077,6 +1083,7 @@ def _process_single_latex_file(file_info):
 def calculate_metrics_for_frame(step_data, messages_by_round, game_steps, current_step_index, agent_log=None, embedding_model=None):
     """Calculate metrics for a specific frame with caching"""
     global metrics_cache
+    global embedding_cache
     
     # Create cache key based on step_index and game_id
     cache_key = f"{step_data.get('timestamp', 'unknown')}_{current_step_index}"
@@ -1085,228 +1092,21 @@ def calculate_metrics_for_frame(step_data, messages_by_round, game_steps, curren
     if cache_key in metrics_cache:
         return metrics_cache[cache_key]
     
-    metrics = {}
-    try:
-        # Basic info retrieval 
-        round_num = int(step_data['round'])
-        grid_data = step_data.get('grid', [])
-        agents_list = step_data.get('agents', [])
-        
-        # Position analysis
-        positions = {}
-        for agent in agents_list:
-            if isinstance(agent, dict) and all(k in agent for k in ('x','y','id')):
-                try:
-                    agent_id = str(agent['id'])
-                    positions[agent_id] = (int(agent['x']), int(agent['y']))
-                except (ValueError, TypeError): 
-                    continue
-        
-        # Previous positions for comparison
-        prev_positions = {}
-        if current_step_index > 0 and game_steps:
-            prev_step = game_steps[current_step_index-1]
-            if isinstance(prev_step, dict) and 'agents' in prev_step:
-                for agent in prev_step.get('agents', []):
-                    if isinstance(agent, dict) and all(k in agent for k in ('x','y','id')):
-                        try:
-                            agent_id = str(agent['id'])
-                            prev_positions[agent_id] = (int(agent['x']), int(agent['y']))
-                        except (ValueError, TypeError):
-                            continue
-
-        # Action analysis
-        actions_in_round = []
-        if agent_log:
-            for entry in agent_log:
-                if isinstance(entry, dict) and 'round' in entry and entry['round'] == round_num and 'action' in entry:
-                    action = entry.get('action')
-                    if action:
-                        actions_in_round.append(action)
-        
-        # Message analysis
-        round_messages = []
-        for agent_id, msg in messages_by_round.get(round_num, {}).items():
-            if msg:
-                round_messages.append(str(msg))
-        
-        # Calculate metrics
-        
-        # 1. Directional entropy
-        move_actions = [a for a in actions_in_round if a in ACTUAL_MOVE_ACTIONS]
-        metrics['directional_entropy'] = shannon_entropy(move_actions)
-        
-        # 2. Stillness proportion
-        if actions_in_round:
-            stay_count = actions_in_round.count('STAY')
-            metrics['stillness_proportion'] = stay_count / len(actions_in_round)
-        else:
-            metrics['stillness_proportion'] = 0.0
-            
-        # 3. Message metrics
-        if round_messages:
-            message_lengths = [len(msg) for msg in round_messages]
-            metrics['mean_message_length'] = np.mean(message_lengths)
-            metrics['std_message_length'] = np.std(message_lengths) if len(message_lengths) >= 2 else 0.0
-        else:
-            metrics['mean_message_length'] = 0.0
-            metrics['std_message_length'] = 0.0
-        
-        # 4. Count of questions in messages
-        question_mark_count = 0
-        total_chars_in_round = 0
-        digit_chars_in_round = 0
-        
-        if round_messages:
-            for msg in round_messages:
-                if "?" in msg:
-                    question_mark_count += 1
-                for char in msg:
-                    total_chars_in_round += 1
-                    if char.isdigit():
-                        digit_chars_in_round += 1
-                
-            metrics['prop_question_sentences'] = question_mark_count / len(round_messages) if round_messages else 0.0
-            metrics['prop_digit_chars'] = digit_chars_in_round / total_chars_in_round if total_chars_in_round > 0 else 0.0
-        else:
-            metrics['prop_question_sentences'] = 0.0
-            metrics['prop_digit_chars'] = 0.0
-        
-        # 5. Information homogeneity (using cached embeddings)
-        if embedding_model and len(round_messages) >= 2 and embedding_cache is not None:
-            try:
-                unique_messages = list(set(round_messages))
-                if len(unique_messages) >= 2:
-                    # Use embedding cache for faster processing
-                    embeddings = []
-                    for msg in unique_messages:
-                        embedding = embedding_cache.get_embedding(msg)
-                        if embedding is not None:
-                            embeddings.append(embedding)
-                    
-                    if len(embeddings) >= 2:
-                        embeddings = np.array(embeddings)
-                        cos_sim_matrix = cosine_similarity(embeddings)
-                        upper_triangle_indices = np.triu_indices_from(cos_sim_matrix, k=1)
-                        pairwise_sims = cos_sim_matrix[upper_triangle_indices]
-                        metrics['info_homogeneity'] = np.nanmean(pairwise_sims) if len(pairwise_sims) > 0 else 0.0
-                    else:
-                        metrics['info_homogeneity'] = 1.0  # Perfect homogeneity if couldn't compute
-                else:
-                    metrics['info_homogeneity'] = 1.0  # Perfect homogeneity if only one unique message
-            except Exception as e:
-                print(f"Error calculating info_homogeneity: {e}")
-                metrics['info_homogeneity'] = 0.0
-        else:
-            metrics['info_homogeneity'] = 0.0
-        
-        # 6. Movement metrics
-        cumulative_distances = {}
-        for agent_id, curr_pos in positions.items():
-            if agent_id in prev_positions:
-                prev_pos = prev_positions[agent_id]
-                distance_moved = manhattan_distance(prev_pos, curr_pos)
-                cumulative_distances[agent_id] = distance_moved
-        
-        if cumulative_distances:
-            metrics['avg_moving_distance'] = sum(cumulative_distances.values()) / len(cumulative_distances)
-        else:
-            metrics['avg_moving_distance'] = 0.0
-            
-        # 7. Exploration rate (count of unique cells explored so far)
-        explored_cells = set()
-        for i in range(current_step_index + 1):
-            if i < len(game_steps) and 'agents' in game_steps[i]:
-                for agent in game_steps[i].get('agents', []):
-                    if isinstance(agent, dict) and 'x' in agent and 'y' in agent:
-                        try:
-                            explored_cells.add((int(agent['x']), int(agent['y'])))
-                        except (ValueError, TypeError):
-                            continue
-        metrics['exploration_rate'] = len(explored_cells)
-        
-        # 8. Coordination metrics
-        actions_for_coordination = [a for a in actions_in_round if a in COORDINATION_ACTIONS]
-        if actions_for_coordination:
-            # Dominant action proportion
-            action_counts = Counter(actions_for_coordination)
-            max_freq = action_counts.most_common(1)[0][1] if action_counts else 0
-            metrics['dominant_action_prop'] = max_freq / len(actions_for_coordination) if len(actions_for_coordination) > 0 else 0.0
-            
-            # Polarization index
-            sum_vector = np.zeros(2)
-            for action in actions_for_coordination:
-                sum_vector += ACTION_VECTORS.get(action, np.array([0,0]))
-            avg_vector = sum_vector / len(actions_for_coordination) if len(actions_for_coordination) > 0 else np.zeros(2)
-            metrics['polarization_index'] = np.linalg.norm(avg_vector)
-        else:
-            metrics['dominant_action_prop'] = 0.0
-            metrics['polarization_index'] = 0.0
-        
-        # 9. Local structure preservation
-        metrics['local_structure_preservation_count'] = 0
-        agent_ids = list(positions.keys())
-        if len(agent_ids) >= 2 and prev_positions:
-            for i in range(len(agent_ids)):
-                for j in range(i+1, len(agent_ids)):
-                    agent_i = agent_ids[i]
-                    agent_j = agent_ids[j]
-                    if agent_i in prev_positions and agent_j in prev_positions and agent_i in positions and agent_j in positions:
-                        prev_dist = manhattan_distance(prev_positions[agent_i], prev_positions[agent_j])
-                        curr_dist = manhattan_distance(positions[agent_i], positions[agent_j])
-                        # Check if agents maintained adjacency
-                        if prev_dist == 1 and curr_dist == 1:
-                            metrics['local_structure_preservation_count'] += 1
-        
-        # 10. Agent push events
-        metrics['agent_push_events'] = 0
-        if prev_positions and current_step_index > 0:
-            prev_round = int(game_steps[current_step_index-1].get('round', 0))
-            actions_prev_round = {}
-            # Get actions from previous round
-            if agent_log:
-                for entry in agent_log:
-                    if isinstance(entry, dict) and 'round' in entry and entry['round'] == prev_round and 'action' in entry and 'agent_id' in entry:
-                        actions_prev_round[entry['agent_id']] = entry['action']
-            
-            # Check for push events
-            for agent_A_id, pos_A_prev in prev_positions.items():
-                if agent_A_id not in actions_prev_round or agent_A_id not in positions:
-                    continue
-                    
-                action_A = actions_prev_round.get(agent_A_id)
-                if action_A not in ACTUAL_MOVE_ACTIONS:
-                    continue
-                    
-                for agent_B_id, pos_B_prev in prev_positions.items():
-                    if agent_A_id == agent_B_id or agent_B_id not in positions:
-                        continue
-                    
-                    # Check if agents were adjacent
-                    if manhattan_distance(pos_A_prev, pos_B_prev) != 1:
-                        continue
-                        
-                    # Calculate intended position after A's move
-                    intended_A_pos = tuple(np.array(pos_A_prev) + ACTION_VECTORS[action_A])
-                    
-                    # Check if A moved into B's previous position
-                    if intended_A_pos == pos_B_prev and positions[agent_A_id] == pos_B_prev:
-                        # Calculate expected position for B if pushed
-                        expected_B_pos = tuple(np.array(pos_B_prev) + ACTION_VECTORS[action_A])
-                        
-                        # Check if B actually moved in the expected direction
-                        if positions[agent_B_id] == expected_B_pos:
-                            metrics['agent_push_events'] += 1
-        
-        # Store metrics in cache
-        metrics_cache[cache_key] = metrics
-        
-        return metrics
-    except Exception as e:
-        print(f"Error calculating metrics: {e}")
-        import traceback
-        traceback.print_exc()
-        return {}
+    # Use the consolidated metrics calculation function
+    metrics = calculate_all_metrics(
+        step_data=step_data,
+        messages_by_round=messages_by_round,
+        game_steps=game_steps,
+        current_step_index=current_step_index,
+        agent_log=agent_log,
+        embedding_model=embedding_model,
+        embedding_cache=embedding_cache
+    )
+    
+    # Store metrics in cache
+    metrics_cache[cache_key] = metrics
+    
+    return metrics
 
 # 
 
