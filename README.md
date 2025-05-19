@@ -177,11 +177,14 @@ claude-3-5-haiku-20241022   |      0.60 |    ± 0.49 |     5
 
 ### 📈 6. Export Score & Metric Progression Plots 
 
+
+Run this script to export the plots. The output will be saved in `./figs`
+
 ```
 ./export_metrics_plots.sh
 ```
 
-Run this script to export the plots. The output will be saved in `./figs`
+[![Paper Image](assets/fig3.png)](assets/fig3.png)
 
 ### 📈 7. Export Score Trends for Each Task
 
@@ -196,6 +199,8 @@ For multiple tasks:
 ```bash
 python analysis/task_score_trends.py --log-dir experiment_v01 experiment_v02 experiment_v03 experiment_v04 experiment_v05 --multi-plot --pad-rounds 100
 ```
+
+[![Paper Image](assets/fig4.png)](assets/fig4.png)
 
 ## ☑️ Future Plans
 Here's a list of some stuff that will be added to the codebase!
