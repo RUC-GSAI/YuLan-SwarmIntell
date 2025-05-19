@@ -12,6 +12,8 @@ logs
 experiment_*
 results
 
+latex_frames_export/
+
 *.aux
 *.fdb*
 *.fls
