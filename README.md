@@ -57,10 +57,10 @@ conda activate swarmbench
 
 ### 2. Run SwarmBench Evaluation 🧪
 
-Execute the example script to run the benchmark evaluations:
+Execute the `eval.py` script to run the benchmark evaluations:
 
 ```bash
-python example.py
+python eval.py
 ```
 
 ```python
