@@ -1,13 +1,13 @@
 import os
 import json
 import re
+import math
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
 from scipy.stats import sem
 from collections import defaultdict, Counter
-import math
 from sentence_transformers import SentenceTransformer
 from sklearn.metrics.pairwise import cosine_similarity
 from tqdm import tqdm
@@ -568,6 +568,6 @@ if __name__ == "__main__":
     
     
 """
-python analysis/plot_metrics.py --log-dir experiment_v33 --model-name "gemini-2.0-flash" --output-pdf ./results/mc_gemini-pursuit_analysis.pdf
+python analysis/plot_metrics.py --log-dir experiment_v33 --model-name "gemini-2.0-flash" --output-pdf ./figs/mc_gemini-pursuit_analysis.pdf
 
 """

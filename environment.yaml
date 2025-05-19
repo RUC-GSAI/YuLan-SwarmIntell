@@ -1,4 +1,4 @@
-name: vlm_kilobots
+name: swarmbench
 channels:
   - conda-forge
   - defaults
@@ -264,4 +264,4 @@ dependencies:
       - xgrammar==0.1.15
       - yarl==1.18.3
       - zipp==3.21.0
-prefix: /home/yourname/anaconda3/envs/vlm_kilobots
+prefix: /home/yourname/anaconda3/envs/swarmbench

@@ -18,7 +18,7 @@ Large Language Models (LLMs) show potential for complex reasoning, yet their cap
 
 *Figure 2: Conceptual Architecture of SwarmBench.*
 
-![results](assets/results.png)
+![results](assets/figs.png)
 
 *Figure 3: Overview of LLM Performance on SwarmBench Tasks*
 
@@ -46,7 +46,7 @@ Large Language Models (LLMs) show potential for complex reasoning, yet their cap
 
 ## 🚀 Getting Started
 
-### 1. Setup SwarmBench Environment 🛠️
+### 🛠️ 1. Setup SwarmBench Environment 
 
 Ensure you have Conda installed. Then, create the environment using the provided file:
 
@@ -55,7 +55,7 @@ conda env create -f environment.yaml
 conda activate swarmbench
 ```
 
-### 2. Run SwarmBench Evaluation 🧪
+### 🧪 2. Run SwarmBench Evaluation 
 
 Execute the `eval.py` script to run the benchmark evaluations:
 
@@ -90,7 +90,7 @@ if __name__ == '__main__':
 
 This will run the LLM agents through the defined tasks and log the results.
 
-### 3. Export Replay Videos 🎬
+### 🎬 3. Export Replay Videos 
 
 After running evaluations, you can generate replay videos of the simulations:
 
@@ -134,7 +134,7 @@ o4-mini, the best out of 5 runs.
 
 
 
-### 4. Interactive Replay 🎮
+### 🎮 4. Interactive Replay 
 
 For a more detailed, step-by-step analysis, you can use the interactive replay tool:
 
@@ -147,7 +147,7 @@ Replace `your_experiment_dir` with the actual directory of the experiment you wa
 
 *Screenshot of the interactive replay interface.*
 
-### 5. Export Leaderboard 📊
+### 📊 5. Export Leaderboard 
 
 ```bash
 python analysis/score_agg.py --log-dir your_experiment_dir
@@ -174,6 +174,14 @@ claude-3-5-haiku-20241022   |      0.60 |    ± 0.49 |     5
 -----------------------------------------------------------
 ```
 
+
+### 📈 6. Export Score & Metric Progression Plots 
+
+```
+./export_metrics_plots.sh
+```
+
+Run this script to export the plots. The output will be saved in `./figs`
 
 ## ☑️ Future Plans
 Here's a list of some stuff that will be added to the codebase!
