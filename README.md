@@ -18,7 +18,7 @@ Large Language Models (LLMs) show potential for complex reasoning, yet their cap
 
 *Figure 2: Conceptual Architecture of SwarmBench.*
 
-![results](assets/figs.png)
+![results](assets/results.png)
 
 *Figure 3: Overview of LLM Performance on SwarmBench Tasks*
 
