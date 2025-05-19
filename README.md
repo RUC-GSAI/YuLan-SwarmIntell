@@ -183,7 +183,7 @@ claude-3-5-haiku-20241022   |      0.60 |    ± 0.49 |     5
 
 Run this script to export the plots. The output will be saved in `./figs`
 
-### 7. Export Score Trends for Each Task
+### 📈 7. Export Score Trends for Each Task
 
 For a single task:
 
