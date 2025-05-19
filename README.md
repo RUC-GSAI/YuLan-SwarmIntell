@@ -139,9 +139,9 @@ o4-mini, the best out of 5 runs.
 For a more detailed, step-by-step analysis, you can use the interactive replay tool:
 
 ```bash
-python analysis/generate_replay_videos.py --log-dir ./your_experiment_dir -v
+python analysis/replay_interactive_latex.py -v --log-dir your_experiment_dir 
 ```
-Replace `your_generated_experiment_dir` with the actual directory of the experiment you want to replay.
+Replace `your_experiment_dir` with the actual directory of the experiment you want to replay.
 
 [![Interactive Replay Screenshot](assets/image.png)](assets/image.png)
 
