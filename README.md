@@ -147,6 +147,33 @@ Replace `your_experiment_dir` with the actual directory of the experiment you wa
 
 *Screenshot of the interactive replay interface.*
 
+### 5. Export Leaderboard 📊
+
+```bash
+python analysis/score_agg.py --log-dir your_experiment_dir
+```
+
+You will get output like this:
+
+```bash
+Model                       | Avg Score | ± Std Dev | Games
+-----------------------------------------------------------
+o4-mini                     |      9.60 |    ± 0.49 |     5
+gemini-2.0-flash            |      8.80 |    ± 1.60 |     5
+gpt-4.1                     |      8.40 |    ± 1.85 |     5
+claude-3-7-sonnet-20250219  |      4.40 |    ± 1.20 |     5
+DeepSeek-V3                 |      4.20 |    ± 2.48 |     5
+o3-mini                     |      3.60 |    ± 2.06 |     5
+gpt-4o                      |      3.40 |    ± 1.50 |     5
+qwen/qwq-32b                |      2.20 |    ± 1.94 |     5
+Meta-Llama-3.1-70B-Instruct |      1.80 |    ± 0.40 |     5
+gpt-4.1-mini                |      1.40 |    ± 0.80 |     5
+meta-llama/llama-4-scout    |      1.20 |    ± 0.75 |     5
+deepseek-ai/DeepSeek-R1     |      1.00 |    ± 0.63 |     5
+claude-3-5-haiku-20241022   |      0.60 |    ± 0.49 |     5
+-----------------------------------------------------------
+```
+
 
 ## Future Plans
 Here's a list of some stuff that will be added to the codebase!
