@@ -190,6 +190,19 @@ Here's a list of some stuff that will be added to the codebase!
 - [ ] RLVR trained small model for demo
 - [ ] Include full dataset
 
+### 7. Export Score Trends for Each Task
+
+For a single task:
+
+```bash
+python analysis/task_score_trends.py --log-dir experiment_v01 --pad-rounds 100
+```
+
+For multiple tasks:
+
+```bash
+python analysis/task_score_trends.py --log-dir experiment_v01 experiment_v02 experiment_v03 experiment_v04 experiment_v05 --multi-plot --pad-rounds 100
+```
 
 ## 🤝 Contributing to SwarmBench
 
