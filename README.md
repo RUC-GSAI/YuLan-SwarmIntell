@@ -183,13 +183,6 @@ claude-3-5-haiku-20241022   |      0.60 |    ± 0.49 |     5
 
 Run this script to export the plots. The output will be saved in `./figs`
 
-## ☑️ Future Plans
-Here's a list of some stuff that will be added to the codebase!
-
-- [ ] Add RLVR training & testing code
-- [ ] RLVR trained small model for demo
-- [ ] Include full dataset
-
 ### 7. Export Score Trends for Each Task
 
 For a single task:
@@ -203,6 +196,13 @@ For multiple tasks:
 ```bash
 python analysis/task_score_trends.py --log-dir experiment_v01 experiment_v02 experiment_v03 experiment_v04 experiment_v05 --multi-plot --pad-rounds 100
 ```
+
+## ☑️ Future Plans
+Here's a list of some stuff that will be added to the codebase!
+
+- [ ] Add RLVR training & testing code
+- [ ] RLVR trained small model for demo
+- [ ] Include full dataset
 
 ## 🤝 Contributing to SwarmBench
 
