@@ -91,7 +91,14 @@ if __name__ == '__main__':
 
 This will run the LLM agents through the defined tasks and log the results.
 
-### 🎬 3. Export Replay Videos 
+### 🤗 3. Or Download SwarmBench Dataset Directly
+
+```bash
+python push_huggingface.py
+```
+
+
+### 🎬 4. Export Replay Videos 
 
 After running evaluations, you can generate replay videos of the simulations:
 
@@ -135,7 +142,7 @@ o4-mini, the best out of 5 runs.
 
 
 
-### 🎮 4. Interactive Replay 
+### 🎮 5. Interactive Replay 
 
 For a more detailed, step-by-step analysis, you can use the interactive replay tool:
 
@@ -148,7 +155,7 @@ Replace `your_experiment_dir` with the actual directory of the experiment you wa
 
 *Screenshot of the interactive replay interface.*
 
-### 📊 5. Export Leaderboard 
+### 📊 6. Export Leaderboard 
 
 ```bash
 python analysis/score_agg.py --log-dir your_experiment_dir
@@ -176,7 +183,7 @@ claude-3-5-haiku-20241022   |      0.60 |    ± 0.49 |     5
 ```
 
 
-### 📈 6. Export Score & Metric Progression Plots 
+### 📈 7. Export Score & Metric Progression Plots 
 
 
 Run this script to export the plots. The output will be saved in `./figs`
@@ -187,7 +194,7 @@ Run this script to export the plots. The output will be saved in `./figs`
 
 [![Paper Image](assets/fig3.png)](assets/fig3.png)
 
-### 📈 7. Export Score Trends for Each Task
+### 📈 8. Export Score Trends for Each Task
 
 For a single task:
 
