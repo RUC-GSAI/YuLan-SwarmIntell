@@ -8,7 +8,7 @@ if __name__ == '__main__':
             for seed in (27, 42):
                 SwarmFramework.submit(
                     f'exp_{name}',
-                    SwarmFramework.model_config(model, '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', 'https://openrouter.ai/api/v1'), ########## API
+                    SwarmFramework.model_config(model, 'YOUR_API_KEY', 'https://openrouter.ai/api/v1'), ########## API
                     task,
                     log_dir='./logs', ########## Logging
                     num_agents=10,
