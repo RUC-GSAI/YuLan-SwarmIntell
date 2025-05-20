@@ -11,8 +11,9 @@ structured_logs
 logs
 experiment_*
 results
-
+swarmbench_RLVR/
 latex_frames_export/
+push_huggingface.py
 
 *.aux
 *.fdb*
