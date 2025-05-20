@@ -1,4 +1,4 @@
-from src.swarmenv.framework.llm import Chat, UserAgent
+from framework.llm import Chat, UserAgent
 
 
 class ModelConfig:
