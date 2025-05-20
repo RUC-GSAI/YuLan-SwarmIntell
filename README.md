@@ -208,7 +208,7 @@ Here's a list of some stuff that will be added to the codebase!
 
 - [ ] Add RLVR training & testing code
 - [ ] RLVR trained small model for demo
-- [ ] Include full dataset
+- [x] Include full dataset
 
 ## 🤝 Contributing to SwarmBench
 
