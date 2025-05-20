@@ -143,7 +143,7 @@ python analysis/replay_interactive_latex.py -v --log-dir your_experiment_dir
 ```
 Replace `your_experiment_dir` with the actual directory of the experiment you want to replay.
 
-[![Interactive Replay Screenshot](assets/image.png)](assets/image.png)
+[![Interactive Replay Screenshot](assets/interactive.gif)](assets/interactive.gif)
 
 *Screenshot of the interactive replay interface.*
 
