@@ -4,7 +4,7 @@
 [![arXiv](https://img.shields.io/badge/arXiv-2505.04364-b31b1b.svg)](https://arxiv.org/abs/2505.04364)
 ![License](https://img.shields.io/badge/License-MIT-2196F3.svg)
 ![Stars](https://img.shields.io/github/stars/x66ccff/swarmbench)
-
+![Forks](https://img.shields.io/github/forks/x66ccff/swarmbench)
 
 [![Paper Image](assets/fig1.png)](assets/fig1.png)
 
@@ -143,7 +143,7 @@ python analysis/replay_interactive_latex.py -v --log-dir your_experiment_dir
 ```
 Replace `your_experiment_dir` with the actual directory of the experiment you want to replay.
 
-[![Interactive Replay Screenshot](assets/image.png)](assets/image.png)
+[![Interactive Replay Screenshot](assets/interactive.gif)](assets/interactive.gif)
 
 *Screenshot of the interactive replay interface.*
 

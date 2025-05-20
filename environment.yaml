@@ -266,6 +266,4 @@ dependencies:
       - xgrammar==0.1.15
       - yarl==1.18.3
       - zipp==3.21.0
-# The prefix line is usually not needed in the environment.yml for creation.
-# conda will create it in its default envs dir under the 'name', or you can specify with -p/--prefix.
-# prefix: /home/yourname/anaconda3/envs/swarmbench
+prefix: /home/yourname/anaconda3/envs/swarmbench
