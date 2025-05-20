@@ -3,6 +3,7 @@
 
 [![arXiv](https://img.shields.io/badge/arXiv-2505.04364-b31b1b.svg)](https://arxiv.org/abs/2505.04364)
 ![License](https://img.shields.io/badge/License-MIT-2196F3.svg)
+[![Hugging Face Datasets](https://img.shields.io/badge/%F0%9F%A4%97%20Hugging%20Face-SwarmBench-yellow)](https://huggingface.co/datasets/6cf/swarmbench)
 ![Stars](https://img.shields.io/github/stars/x66ccff/swarmbench)
 ![Forks](https://img.shields.io/github/forks/x66ccff/swarmbench)
 
@@ -207,7 +208,7 @@ Here's a list of some stuff that will be added to the codebase!
 
 - [ ] Add RLVR training & testing code
 - [ ] RLVR trained small model for demo
-- [ ] Include full dataset
+- [x] Include full dataset
 
 ## 🤝 Contributing to SwarmBench
 
