@@ -94,7 +94,7 @@ This will run the LLM agents through the defined tasks and log the results.
 ### 🤗 3. Or Download SwarmBench Dataset Directly
 
 ```bash
-python push_huggingface.py
+python load_dataset.py
 ```
 
 
