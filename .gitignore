@@ -17,6 +17,8 @@ latex_frames_export/
 push_huggingface.py
 YOUR_LOG_DIR/
 
+legacy/
+
 *.aux
 *.fdb*
 *.fls
