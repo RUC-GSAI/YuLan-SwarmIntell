@@ -14,7 +14,7 @@ if __name__ == '__main__':
     swarm.run_task(
         model=SwarmFramework.model_config(
             'gpt-4o-mini',
-            'sk-cxNX9FBAstiFSwdkUEjlEYOSejrKh9JceOy3Ubo9gQwOLTyC',
+            'sk-xxx',
             'https://us.ifopen.ai/v1'
         ),
         task='Transport',
