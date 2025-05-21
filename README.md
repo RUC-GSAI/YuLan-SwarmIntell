@@ -210,12 +210,20 @@ python analysis/task_score_trends.py --log-dir experiment_v01 experiment_v02 exp
 
 [![Paper Image](assets/fig4.png)](assets/fig4.png)
 
+
+## 9. 🌷 RLVR Pipeline
+
+In this project we showcase a simple implementation for swarm RL training. We made a synchronous version adapted from the SwarmBench, which provides a way to extract prompts from the swarm environment, generate responses and feed them back to the environment, allowing us to train LLM in [OpenRLHF](https://github.com/OpenRLHF/OpenRLHF) or other fine-tuning framework.
+
+
+See 🍯 [SwarmRLVR](./swarmRLVR)
+
 ## ☑️ Future Plans
 Here's a list of some stuff that will be added to the codebase!
 
-- [ ] Add RLVR training & testing code
-- [ ] RLVR trained small model for demo
 - [x] Include full dataset
+- [x] Add RLVR training & testing code
+- [ ] RLVR trained small model for demo
 
 ## 🤝 Contributing to SwarmBench
 
