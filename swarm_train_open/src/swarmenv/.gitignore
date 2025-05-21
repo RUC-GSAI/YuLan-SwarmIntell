@@ -1,27 +1,18 @@
 hf_models/
+*.png
 *.txt
-how-to.md
 k
-*ne_figs/
-*ne_results/
+cline_figs/
+cline_results/
 *.csv
 *.pdf
 *.tex
+*.mp4
 latex_output/
 structured_logs
 logs
 experiment_*
 results
-swarmbench_RLVR/
-latex_frames_export/
-push_huggingface.py
-YOUR_LOG_DIR/
-
-*.aux
-*.fdb*
-*.fls
-*.synctex*
-*.gif
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
